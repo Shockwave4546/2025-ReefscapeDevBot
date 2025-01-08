@@ -1,0 +1,31 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "MB-H"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "H-TopSource"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "TopSource-L"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}
