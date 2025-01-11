@@ -34,7 +34,7 @@ public class Robot extends LoggedRobot {
         Logger.recordMetadata("GitDirty", "All changes committed");
         break;
       case 1:
-        Logger.recordMetadata("GitDirty", "Uncomitted changes");
+        Logger.recordMetadata("GitDirty", "Uncommitted changes");
         break;
       default:
         Logger.recordMetadata("GitDirty", "Unknown");
@@ -99,15 +99,9 @@ public class Robot extends LoggedRobot {
     container.autoChooser.get().schedule();
   }
 
-  @Override public void autonomousPeriodic() {
-  }
+  @Override public void autonomousPeriodic() {}
 
-  @Override public void teleopInit() {
-  }
+  @Override public void teleopInit() {}
 
-  @Override public void teleopPeriodic() {
-  }
-
-  @Override public void teleopExit() {
-  }
+  @Override public void teleopPeriodic() {}
 }

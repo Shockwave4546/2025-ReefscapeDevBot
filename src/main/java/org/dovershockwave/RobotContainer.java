@@ -29,11 +29,10 @@ public class RobotContainer {
         swerve = new SwerveSubsystem(new GyroIONavX(), new SwerveIOSpark());
         break;
       case SIM:
+        // TODO: 1/11/2025 Implement simulation modes
         swerve = new SwerveSubsystem(new GyroIO() {}, new SwerveIO() {});
         break;
       case REPLAY:
-        swerve = new SwerveSubsystem(new GyroIO() {}, new SwerveIO() {});
-        break;
       default:
         swerve = new SwerveSubsystem(new GyroIO() {}, new SwerveIO() {});
     }
