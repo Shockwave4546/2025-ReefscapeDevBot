@@ -1,4 +1,4 @@
-package frc.robot.utils;
+package org.dovershockwave.utils;
 
 import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathConstraints;

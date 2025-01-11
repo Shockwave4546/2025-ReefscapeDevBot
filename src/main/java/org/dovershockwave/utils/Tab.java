@@ -1,4 +1,4 @@
-package frc.robot.utils;
+package org.dovershockwave.utils;
 
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
