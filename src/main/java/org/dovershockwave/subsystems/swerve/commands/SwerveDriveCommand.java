@@ -25,8 +25,10 @@ public class SwerveDriveCommand extends Command {
 
   @Override public void execute() {
     final var linearVelocity = getLinearVelocityFromJoysticks(-controller.getLeftY(), -controller.getLeftX());
+    var omega = MathUtil.applyDeadband(-controller.getRightX(), Constants.DRIVE_DEADBAND);
+
     // Square rotation value for more precise control
-    final var omega = Math.copySign(Math.pow(MathUtil.applyDeadband(-controller.getRightX(), Constants.DRIVE_DEADBAND), 2), -controller.getRightX());
+    omega = Math.copySign(omega * omega, omega);
 
     final ChassisSpeeds speeds =
             new ChassisSpeeds(

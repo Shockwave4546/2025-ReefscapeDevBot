@@ -9,7 +9,7 @@ java {
   targetCompatibility = JavaVersion.VERSION_17
 }
 
-def ROBOT_MAIN_CLASS = "org.dovershockwave.Robot"
+def ROBOT_MAIN_CLASS = "org.dovershockwave.Main"
 
 deploy {
   targets {

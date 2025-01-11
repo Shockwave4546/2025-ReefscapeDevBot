@@ -7,7 +7,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import org.dovershockwave.MotorConstants;
-import org.dovershockwave.subsystems.swerve.module.ModuleType;
 import org.dovershockwave.utils.PIDFGains;
 
 public class SwerveConstants {
@@ -22,10 +21,10 @@ public class SwerveConstants {
   public static final double MAX_SPEED_METERS_PER_SECOND = 4.65;
   public static final double MAX_ANGULAR_SPEED_RAD_PER_SEC = MAX_SPEED_METERS_PER_SECOND / DRIVE_BASE_RADIUS;
   public static final Translation2d[] MODULE_TRANSLATIONS = {
-          ModuleType.FRONT_LEFT.positionOffset,
-          ModuleType.FRONT_RIGHT.positionOffset,
-          ModuleType.BACK_LEFT.positionOffset,
-          ModuleType.BACK_RIGHT.positionOffset
+          new Translation2d(WHEEL_BASE_METERS / 2, TRACK_WIDTH_METERS / 2),
+          new Translation2d(WHEEL_BASE_METERS / 2, -TRACK_WIDTH_METERS / 2),
+          new Translation2d(-WHEEL_BASE_METERS / 2, TRACK_WIDTH_METERS / 2),
+          new Translation2d(-WHEEL_BASE_METERS / 2, -TRACK_WIDTH_METERS / 2)
   };
 
   // Drive Motor Can ID Format = 1x
@@ -43,15 +42,15 @@ public class SwerveConstants {
   // MAXSwerve with 13 pinion teeth and 22 spur teeth
   public static final double DRIVE_MOTOR_REDUCTION = (45.0 * 22.0) / (13.0 * 15.0);
   public static final double DRIVE_ENCODER_POSITION_FACTOR = (2 * Math.PI) / DRIVE_MOTOR_REDUCTION;
-  public static final double DRIVE_ENCODER_VELOCITY_FACTOR = ((2 * Math.PI) / 60.0) / DRIVE_MOTOR_REDUCTION;
-  public static final PIDFGains DRIVE_PIDF = new PIDFGains(0.0, 0.0, 0.0, 0.0);
+  public static final double DRIVE_ENCODER_VELOCITY_FACTOR = ((2 * Math.PI) / DRIVE_MOTOR_REDUCTION) / 60.0;
+  public static final PIDFGains DRIVE_PIDF = new PIDFGains(0.0187, 0.0, 0.246, 0.0084);
   public static final double DRIVE_KS = 0.0;
   public static final double DRIVE_KV = 0.0;
 
   public static final boolean TURN_ENCODER_INVERTED = true;
   public static final double TURN_ENCODER_POSITION_FACTOR = 2 * Math.PI;
   public static final double TURN_ENCODER_VELOCITY_FACTOR = (2 * Math.PI) / 60.0;
-  public static final PIDFGains TURN_PIDF = new PIDFGains(0.0, 0.0, 0.0, 0.0);
+  public static final PIDFGains TURN_PIDF = new PIDFGains(0.5, 0.0, 0.0, 0.0);
 
   public static final PIDConstants TRANSLATION_PID = new PIDConstants(0.0, 0.0, 0.0);
   public static final PIDConstants ROTATION_PID = new PIDConstants(0.0, 0.0, 0.0);

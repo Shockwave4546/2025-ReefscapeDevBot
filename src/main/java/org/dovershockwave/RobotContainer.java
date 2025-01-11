@@ -21,7 +21,7 @@ public class RobotContainer {
   protected final CommandXboxController driverController = new CommandXboxController(Constants.DRIVER_CONTROLLER_PORT);
   protected final CommandXboxController operatorController = new CommandXboxController(Constants.OPERATOR_CONTROLLER_PORT);
 
-  protected final LoggedDashboardChooser<Command> autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
+  protected final LoggedDashboardChooser<Command> autoChooser;
 
   public RobotContainer() {
     switch (Constants.CURRENT_MODE) {
@@ -36,6 +36,8 @@ public class RobotContainer {
       default:
         swerve = new SwerveSubsystem(new GyroIO() {}, new SwerveIO() {});
     }
+
+    autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
     if (!isCompetitionMatch()) {
       autoChooser.addOption("Drive Simple FF Characterization", new FeedforwardCharacterizationCommand(swerve));

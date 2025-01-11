@@ -86,14 +86,14 @@ public class SwerveSubsystem extends SubsystemBase {
     ODOMETRY_LOCK.lock(); // Prevents odometry updates while reading data
     gyroIO.updateInputs(gyroInputs);
     Logger.processInputs("Drive/Gyro", gyroInputs);
-    for (org.dovershockwave.subsystems.swerve.module.Module module : swerveIO.getModules()) {
+    for (Module module : swerveIO.getModules()) {
       module.periodic();
     }
     ODOMETRY_LOCK.unlock();
 
     // Stop moving when disabled
     if (DriverStation.isDisabled()) {
-      for (org.dovershockwave.subsystems.swerve.module.Module module : swerveIO.getModules()) {
+      for (Module module : swerveIO.getModules()) {
         module.stop();
       }
 
@@ -180,12 +180,12 @@ public class SwerveSubsystem extends SubsystemBase {
   /** Returns the module states (turn angles and drive velocities) for all of the modules. */
   @AutoLogOutput(key = "SwerveStates/Measured")
   private SwerveModuleState[] getModuleStates() {
-    return Arrays.stream(swerveIO.getModules()).map(org.dovershockwave.subsystems.swerve.module.Module::getState).toArray(SwerveModuleState[]::new);
+    return Arrays.stream(swerveIO.getModules()).map(Module::getState).toArray(SwerveModuleState[]::new);
   }
 
   /** Returns the module positions (turn angles and drive positions) for all of the modules. */
   private SwerveModulePosition[] getModulePositions() {
-    return Arrays.stream(swerveIO.getModules()).map(org.dovershockwave.subsystems.swerve.module.Module::getPosition).toArray(SwerveModulePosition[]::new);
+    return Arrays.stream(swerveIO.getModules()).map(Module::getPosition).toArray(SwerveModulePosition[]::new);
   }
 
   /** Returns the measured chassis speeds of the robot. */
@@ -196,7 +196,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
   /** Returns the position of each module in radians. */
   public double[] getWheelRadiusCharacterizationPositions() {
-    return Arrays.stream(swerveIO.getModules()).mapToDouble(org.dovershockwave.subsystems.swerve.module.Module::getWheelRadiusCharacterizationPosition).toArray();
+    return Arrays.stream(swerveIO.getModules()).mapToDouble(Module::getWheelRadiusCharacterizationPosition).toArray();
   }
 
   /** Returns the average velocity of the modules in rad/sec. */

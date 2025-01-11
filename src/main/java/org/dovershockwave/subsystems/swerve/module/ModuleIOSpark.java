@@ -1,14 +1,20 @@
 package org.dovershockwave.subsystems.swerve.module;
 
 import com.revrobotics.AbsoluteEncoder;
+import com.revrobotics.REVLibError;
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.spark.*;
+import com.revrobotics.spark.SparkBase;
+import com.revrobotics.spark.SparkClosedLoopController;
+import com.revrobotics.spark.SparkLowLevel;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.ClosedLoopConfig;
+import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Rotation2d;
 import org.dovershockwave.subsystems.swerve.SparkOdometryThread;
 import org.dovershockwave.subsystems.swerve.SwerveConfigs;
-import org.dovershockwave.subsystems.swerve.SwerveConstants;
+import org.dovershockwave.utils.PIDFGains;
 
 import java.util.Queue;
 import java.util.function.DoubleSupplier;
@@ -33,6 +39,8 @@ public class ModuleIOSpark implements ModuleIO {
   private final Debouncer driveConnectedDebouncer = new Debouncer(0.5);
   private final Debouncer turnConnectedDebouncer = new Debouncer(0.5);
 
+  private final ModuleType type;
+
   public ModuleIOSpark(ModuleType type) {
     driveSpark = new SparkMax(type.driveID, SparkLowLevel.MotorType.kBrushless);
     driveEncoder = driveSpark.getEncoder();
@@ -41,6 +49,8 @@ public class ModuleIOSpark implements ModuleIO {
     turnSpark = new SparkMax(type.turnID, SparkLowLevel.MotorType.kBrushless);
     turnEncoder = turnSpark.getAbsoluteEncoder();
     turnPID = turnSpark.getClosedLoopController();
+
+    this.type = type;
 
     tryUntilOk(driveSpark, 5, spark -> {
       spark.configure(SwerveConfigs.DRIVE_CONFIG, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
@@ -82,7 +92,7 @@ public class ModuleIOSpark implements ModuleIO {
 
     inputs.odometryTimestamps = timestampQueue.stream().mapToDouble((Double value) -> value).toArray();
     inputs.odometryDrivePositionsRad = drivePositionQueue.stream().mapToDouble((Double value) -> value).toArray();
-    inputs.odometryTurnPositions = turnPositionQueue.stream().map(Rotation2d::new).toArray(Rotation2d[]::new);
+    inputs.odometryTurnPositions = turnPositionQueue.stream().map((value) -> new Rotation2d(value).minus(Rotation2d.fromRadians(type.angleOffset))).toArray(Rotation2d[]::new);
     timestampQueue.clear();
     drivePositionQueue.clear();
     turnPositionQueue.clear();
@@ -97,17 +107,28 @@ public class ModuleIOSpark implements ModuleIO {
   }
 
   @Override public void setDriveVelocity(double velocityRadPerSec) {
-    double ffVolts = SwerveConstants.DRIVE_KS * Math.signum(velocityRadPerSec) + SwerveConstants.DRIVE_KV * velocityRadPerSec;
-    drivePID.setReference(
-            velocityRadPerSec,
-            SparkBase.ControlType.kVelocity,
-            ClosedLoopSlot.kSlot0,
-            ffVolts,
-            SparkClosedLoopController.ArbFFUnits.kVoltage);
+//    double ffVolts = SwerveConstants.DRIVE_KS * Math.signum(velocityRadPerSec) + SwerveConstants.DRIVE_KV * velocityRadPerSec;
+    drivePID.setReference(velocityRadPerSec, SparkBase.ControlType.kVelocity);
+//    drivePID.setReference(
+//            velocityRadPerSec,
+//            SparkBase.ControlType.kVelocity,
+//            ClosedLoopSlot.kSlot0,
+//            ffVolts,
+//            SparkClosedLoopController.ArbFFUnits.kVoltage);
   }
 
   @Override public void setTurnPosition(Rotation2d rotation) {
-    double setpoint = MathUtil.inputModulus(rotation.getRadians(), 0.0, 2 * Math.PI);
+    double setpoint = MathUtil.inputModulus(rotation.plus(Rotation2d.fromRadians(type.angleOffset)).getRadians(), 0.0, 2 * Math.PI);
     turnPID.setReference(setpoint, SparkBase.ControlType.kPosition);
+  }
+
+  @Override public REVLibError setDrivePIDF(PIDFGains gains) {
+    final var config = new SparkMaxConfig().apply(new ClosedLoopConfig().pidf(gains.p(), gains.i(), gains.d(), gains.ff()));
+    return driveSpark.configure(config, SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kNoPersistParameters);
+  }
+
+  @Override public REVLibError setTurnPIDF(PIDFGains gains) {
+    final var config = new SparkMaxConfig().apply(new ClosedLoopConfig().pidf(gains.p(), gains.i(), gains.d(), gains.ff()));
+    return turnSpark.configure(config, SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kNoPersistParameters);
   }
 }

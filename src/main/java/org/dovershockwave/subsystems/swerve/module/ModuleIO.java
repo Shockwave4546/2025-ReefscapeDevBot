@@ -1,6 +1,8 @@
 package org.dovershockwave.subsystems.swerve.module;
 
+import com.revrobotics.REVLibError;
 import edu.wpi.first.math.geometry.Rotation2d;
+import org.dovershockwave.utils.PIDFGains;
 import org.littletonrobotics.junction.AutoLog;
 
 public interface ModuleIO {
@@ -32,4 +34,8 @@ public interface ModuleIO {
   default void setDriveVelocity(double velocityRadPerSec) {}
 
   default void setTurnPosition(Rotation2d rotation) {}
+
+  default REVLibError setDrivePIDF(PIDFGains gains) { return REVLibError.kOk; }
+
+  default REVLibError setTurnPIDF(PIDFGains gains) { return REVLibError.kOk; }
 }
