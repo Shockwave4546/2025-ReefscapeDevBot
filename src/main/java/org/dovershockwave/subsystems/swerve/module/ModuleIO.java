@@ -1,4 +1,4 @@
-package org.dovershockwave.subsystems.swerve;
+package org.dovershockwave.subsystems.swerve.module;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import org.littletonrobotics.junction.AutoLog;
@@ -23,18 +23,13 @@ public interface ModuleIO {
     public Rotation2d[] odometryTurnPositions = new Rotation2d[]{};
   }
 
-  default void updateInputs(ModuleIOInputs inputs) {
-  }
+  default void updateInputs(ModuleIOInputs inputs) {}
 
-  default void setDriveOpenLoop(double output) {
-  }
+  default void setDriveOpenLoop(double output) {}
 
-  default void setTurnOpenLoop(double output) {
-  }
+  default void setTurnOpenLoop(double output) {}
 
-  default void setDriveVelocity(double velocityRadPerSec) {
-  }
+  default void setDriveVelocity(double velocityRadPerSec) {}
 
-  default void setTurnPosition(Rotation2d rotation) {
-  }
+  default void setTurnPosition(Rotation2d rotation) {}
 }

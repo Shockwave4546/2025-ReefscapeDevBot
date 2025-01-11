@@ -1,5 +1,7 @@
 package org.dovershockwave;
 
+import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import org.littletonrobotics.junction.LogFileUtil;
@@ -10,7 +12,15 @@ import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 import org.littletonrobotics.urcl.URCL;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
 public class Robot extends LoggedRobot {
+  private static final Alert LOG_FOLDER_FOUND = new Alert("Logging is enabled.",Alert.AlertType.kInfo);
+  private static final Alert LOG_FOLDER_NOT_FOUND = new Alert("Logging is disabled as the log folder doesn't exist!", Alert.AlertType.kWarning);
+  private static final Alert TUNING_MODE_ENABLED = new Alert("Tuning mode is enabled.", Alert.AlertType.kInfo);
+  private static final Alert TUNING_MODE_ENABLED_COMP = new Alert("Tuning mode is enabled in a competition round!", Alert.AlertType.kWarning);
   private final RobotContainer container;
 
   public Robot() {
@@ -33,9 +43,23 @@ public class Robot extends LoggedRobot {
 
     switch (Constants.CURRENT_MODE) {
       case REAL:
-        // Running on a real robot, log to a USB stick ("/U/logs")
-        Logger.addDataReceiver(new WPILOGWriter());
         Logger.addDataReceiver(new NT4Publisher());
+        //noinspection resource
+        new PowerDistribution(); // Enables power distribution logging.
+
+        final var logFolderPath = Paths.get(Constants.LOG_FOLDER_PATH);
+        if (Files.notExists(logFolderPath)) {
+          try {
+            Files.createDirectories(logFolderPath); // Create /log folder if it's a new RIO
+          } catch (IOException ignored) {}
+        }
+
+        if (Files.exists(logFolderPath)) {
+          LOG_FOLDER_FOUND.set(true);
+          Logger.addDataReceiver(new WPILOGWriter());
+        } else {
+          LOG_FOLDER_NOT_FOUND.set(true);
+        }
         break;
 
       case SIM:
@@ -54,6 +78,10 @@ public class Robot extends LoggedRobot {
 
     Logger.registerURCL(URCL.startExternal());
     Logger.start();
+
+    if (RobotContainer.isCompetitionMatch() && Constants.TUNING_MODE) TUNING_MODE_ENABLED_COMP.set(true);
+    else TUNING_MODE_ENABLED.set(Constants.TUNING_MODE);
+
     container = new RobotContainer();
   }
 
@@ -68,6 +96,7 @@ public class Robot extends LoggedRobot {
   }
 
   @Override public void autonomousInit() {
+    container.autoChooser.get().schedule();
   }
 
   @Override public void autonomousPeriodic() {
