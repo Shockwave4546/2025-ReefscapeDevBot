@@ -3,35 +3,35 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.5756495993682844,
-        "y": 7.302751820798802
+        "x": 5.0,
+        "y": 4.051
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.4964399314413264,
-        "y": 6.379049047353316
+        "x": 6.0,
+        "y": 4.051
       },
       "isLocked": false,
-      "linkedName": "TopSource"
+      "linkedName": "TestPath.1"
     },
     {
       "anchor": {
-        "x": 3.542845559125551,
-        "y": 5.378540971503603
+        "x": 8.064968697165027,
+        "y": 4.051
       },
       "prevControl": {
-        "x": 3.698846694115028,
-        "y": 5.1831857927086835
+        "x": 7.0649686971650265,
+        "y": 4.051
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "ReefL"
+      "linkedName": "BargeMiddle"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.3010076992753624,
-      "rotationDegrees": 119.99999999999999
+      "waypointRelativePos": 0.5,
+      "rotationDegrees": 0.0
     }
   ],
   "constraintZones": [],
@@ -47,13 +47,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 119.99999999999999
+    "rotation": 0.0
   },
   "reversed": false,
   "folder": null,
   "idealStartingState": {
-    "velocity": 0.0,
-    "rotation": -54.0
+    "velocity": 0,
+    "rotation": 180.0
   },
   "useDefaultConstraints": true
 }

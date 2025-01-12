@@ -14,11 +14,12 @@ public class SwerveConstants {
 
   public static final double WHEEL_RADIUS_METERS = Units.inchesToMeters(1.5);
   // Distance between centers of left and right wheels on robot
-  public static final double TRACK_WIDTH_METERS = Units.inchesToMeters(24.0);
+  public static final double TRACK_WIDTH_METERS = Units.inchesToMeters(26.019);
   // Distance between front and back wheels on robot
-  public static final double WHEEL_BASE_METERS = Units.inchesToMeters(24.0);
+  public static final double WHEEL_BASE_METERS = Units.inchesToMeters(26.019);
   public static final double DRIVE_BASE_RADIUS = Math.sqrt(Math.pow(WHEEL_BASE_METERS, 2) + Math.pow(TRACK_WIDTH_METERS, 2));
   public static final double MAX_SPEED_METERS_PER_SECOND = 4.65;
+  // 4.97523543 rad/s OR
   public static final double MAX_ANGULAR_SPEED_RAD_PER_SEC = MAX_SPEED_METERS_PER_SECOND / DRIVE_BASE_RADIUS;
   public static final Translation2d[] MODULE_TRANSLATIONS = {
           new Translation2d(WHEEL_BASE_METERS / 2, TRACK_WIDTH_METERS / 2),
@@ -58,7 +59,7 @@ public class SwerveConstants {
           45.3592,  // Robot mass (kg)
           6.883,             // Robot MOI (kg m^2)
           new ModuleConfig(
-                  Units.inchesToMeters(1.5),   // Wheel radius (m)
+                  WHEEL_RADIUS_METERS,   // Wheel radius (m)
                   4.65,                        // Max speed (m/s)
                   1.43,                        // Wheel COF (unitless)
                   DCMotor.getNEO(1).withReduction(DRIVE_MOTOR_REDUCTION),

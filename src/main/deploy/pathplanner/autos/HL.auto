@@ -21,6 +21,18 @@
           "data": {
             "pathName": "TopSource-L"
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "L-TopSource"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "TopSource-K"
+          }
         }
       ]
     }

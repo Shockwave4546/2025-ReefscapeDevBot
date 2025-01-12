@@ -8,29 +8,45 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.4964399314413264,
-        "y": 6.379049047353316
+        "x": 1.7432147952657093,
+        "y": 7.082048843438201
       },
       "isLocked": false,
       "linkedName": "TopSource"
     },
     {
       "anchor": {
-        "x": 3.542845559125551,
-        "y": 5.378540971503603
+        "x": 3.035286885245902,
+        "y": 6.44891393442623
       },
       "prevControl": {
-        "x": 3.698846694115028,
-        "y": 5.1831857927086835
+        "x": 2.639292701998454,
+        "y": 6.920010462772334
+      },
+      "nextControl": {
+        "x": 3.452459016393443,
+        "y": 5.952622950819671
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 3.827982318363384,
+        "y": 5.54748920718537
+      },
+      "prevControl": {
+        "x": 3.548496559945304,
+        "y": 5.8317309393863805
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "ReefL"
+      "linkedName": "ReefK"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.3010076992753624,
+      "waypointRelativePos": 1.0,
       "rotationDegrees": 119.99999999999999
     }
   ],
@@ -52,7 +68,7 @@
   "reversed": false,
   "folder": null,
   "idealStartingState": {
-    "velocity": 0.0,
+    "velocity": 0,
     "rotation": -54.0
   },
   "useDefaultConstraints": true
