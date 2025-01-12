@@ -30,7 +30,6 @@ public class SwerveDriveCommand extends Command {
     swerve.runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(
             speeds,
             isFlipped ? swerve.getRotation().plus(new Rotation2d(Math.PI)) : swerve.getRotation()));
-    swerve.runVelocity(speeds);
   }
 
   private ChassisSpeeds getChassisSpeeds(Translation2d linearVelocity) {
