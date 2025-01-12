@@ -25,22 +25,25 @@ public class SwerveDriveCommand extends Command {
 
   @Override public void execute() {
     final var linearVelocity = getLinearVelocityFromJoysticks(-controller.getLeftY(), -controller.getLeftX());
-    var omega = MathUtil.applyDeadband(-controller.getRightX(), Constants.DRIVE_DEADBAND);
-
-    // Square rotation value for more precise control
-    omega = Math.copySign(omega * omega, omega);
-
-    final ChassisSpeeds speeds =
-            new ChassisSpeeds(
-                    linearVelocity.getX() * SwerveConstants.MAX_SPEED_METERS_PER_SECOND,
-                    linearVelocity.getY() * SwerveConstants.MAX_SPEED_METERS_PER_SECOND,
-                    omega * SwerveConstants.MAX_ANGULAR_SPEED_RAD_PER_SEC
-            );
+    final var speeds = getChassisSpeeds(linearVelocity);
     final var isFlipped = DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == DriverStation.Alliance.Red;
     swerve.runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(
             speeds,
             isFlipped ? swerve.getRotation().plus(new Rotation2d(Math.PI)) : swerve.getRotation()));
     swerve.runVelocity(speeds);
+  }
+
+  private ChassisSpeeds getChassisSpeeds(Translation2d linearVelocity) {
+    var omega = MathUtil.applyDeadband(-controller.getRightX(), Constants.DRIVE_DEADBAND);
+
+    // Square rotation value for more precise control
+    omega = Math.copySign(omega * omega, omega);
+
+    return new ChassisSpeeds(
+            linearVelocity.getX() * SwerveConstants.MAX_SPEED_METERS_PER_SECOND,
+            linearVelocity.getY() * SwerveConstants.MAX_SPEED_METERS_PER_SECOND,
+            omega * SwerveConstants.MAX_ANGULAR_SPEED_RAD_PER_SEC
+    );
   }
 
   private static Translation2d getLinearVelocityFromJoysticks(double x, double y) {
