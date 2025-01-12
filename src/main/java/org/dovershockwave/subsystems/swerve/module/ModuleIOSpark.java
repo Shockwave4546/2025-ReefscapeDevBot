@@ -81,7 +81,7 @@ public class ModuleIOSpark implements ModuleIO {
     inputs.driveConnected = driveConnectedDebouncer.calculate(!HAS_STICKY_FAULT);
 
     HAS_STICKY_FAULT = false;
-    useValueIfOk(turnSpark, turnEncoder::getPosition, (value) -> inputs.turnPosition = new Rotation2d(value), () -> HAS_STICKY_FAULT = true);
+    useValueIfOk(turnSpark, turnEncoder::getPosition, (value) -> inputs.turnPosition = new Rotation2d(value).minus(Rotation2d.fromRadians(type.angleOffset)), () -> HAS_STICKY_FAULT = true);
     useValueIfOk(turnSpark, turnEncoder::getVelocity, (value) -> inputs.turnVelocityRadPerSec = value, () -> HAS_STICKY_FAULT = true);
     useValuesIfOk(turnSpark,
             new DoubleSupplier[]{turnSpark::getAppliedOutput, turnSpark::getBusVoltage},

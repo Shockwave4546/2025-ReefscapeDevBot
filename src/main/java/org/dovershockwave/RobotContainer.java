@@ -6,14 +6,15 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import org.dovershockwave.subsystems.swerve.SwerveIO;
-import org.dovershockwave.subsystems.swerve.SwerveIOSpark;
 import org.dovershockwave.subsystems.swerve.SwerveSubsystem;
 import org.dovershockwave.subsystems.swerve.commands.FeedforwardCharacterizationCommand;
 import org.dovershockwave.subsystems.swerve.commands.ResetFieldOrientatedDriveCommand;
 import org.dovershockwave.subsystems.swerve.commands.SwerveDriveCommand;
 import org.dovershockwave.subsystems.swerve.gyro.GyroIO;
 import org.dovershockwave.subsystems.swerve.gyro.GyroIONavX;
+import org.dovershockwave.subsystems.swerve.module.ModuleIO;
+import org.dovershockwave.subsystems.swerve.module.ModuleIOSpark;
+import org.dovershockwave.subsystems.swerve.module.ModuleType;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class RobotContainer {
@@ -26,15 +27,21 @@ public class RobotContainer {
   public RobotContainer() {
     switch (Constants.CURRENT_MODE) {
       case REAL:
-        swerve = new SwerveSubsystem(new GyroIONavX(), new SwerveIOSpark());
+        swerve = new SwerveSubsystem(
+                new GyroIONavX(),
+                new ModuleIOSpark(ModuleType.FRONT_LEFT),
+                new ModuleIOSpark(ModuleType.FRONT_RIGHT),
+                new ModuleIOSpark(ModuleType.BACK_LEFT),
+                new ModuleIOSpark(ModuleType.BACK_RIGHT)
+        );
         break;
       case SIM:
         // TODO: 1/11/2025 Implement simulation modes
-        swerve = new SwerveSubsystem(new GyroIO() {}, new SwerveIO() {});
+        swerve = new SwerveSubsystem(new GyroIO() {}, new ModuleIO() {}, new ModuleIO() {}, new ModuleIO() {}, new ModuleIO() {});
         break;
       case REPLAY:
       default:
-        swerve = new SwerveSubsystem(new GyroIO() {}, new SwerveIO() {});
+        swerve = new SwerveSubsystem(new GyroIO() {}, new ModuleIO() {}, new ModuleIO() {}, new ModuleIO() {}, new ModuleIO() {});
     }
 
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());

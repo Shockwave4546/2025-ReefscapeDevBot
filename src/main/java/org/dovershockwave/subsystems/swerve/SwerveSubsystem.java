@@ -24,6 +24,8 @@ import org.dovershockwave.Constants;
 import org.dovershockwave.subsystems.swerve.gyro.GyroIO;
 import org.dovershockwave.subsystems.swerve.gyro.GyroIOInputsAutoLogged;
 import org.dovershockwave.subsystems.swerve.module.Module;
+import org.dovershockwave.subsystems.swerve.module.ModuleIO;
+import org.dovershockwave.subsystems.swerve.module.ModuleType;
 import org.dovershockwave.utils.LocalADStarAK;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
@@ -40,8 +42,9 @@ public class SwerveSubsystem extends SubsystemBase {
   private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
   private final Alert gyroDisconnectedAlert = new Alert("Disconnected gyro", Alert.AlertType.kError);
   private final GyroIO gyroIO;
-  private final SwerveIO swerveIO;
   private final SysIdRoutine sysId;
+
+  private final Module[] modules;
 
   private final SwerveDriveKinematics kinematics = new SwerveDriveKinematics(SwerveConstants.MODULE_TRANSLATIONS);
   private Rotation2d rawGyroRotation = new Rotation2d();
@@ -53,9 +56,14 @@ public class SwerveSubsystem extends SubsystemBase {
   };
   private final SwerveDrivePoseEstimator poseEstimator = new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, new Pose2d());
 
-  public SwerveSubsystem(GyroIO gyroIO, SwerveIO swerveIO) {
+  public SwerveSubsystem(GyroIO gyroIO, ModuleIO frontLeft, ModuleIO frontRight, ModuleIO backLeft, ModuleIO backRight) {
     this.gyroIO = gyroIO;
-    this.swerveIO = swerveIO;
+    this.modules = new Module[]{
+            new Module(frontLeft, ModuleType.FRONT_LEFT),
+            new Module(frontRight, ModuleType.FRONT_RIGHT),
+            new Module(backLeft, ModuleType.BACK_LEFT),
+            new Module(backRight, ModuleType.BACK_RIGHT)
+    };
 
     SparkOdometryThread.getInstance().start();
 
@@ -86,14 +94,14 @@ public class SwerveSubsystem extends SubsystemBase {
     ODOMETRY_LOCK.lock(); // Prevents odometry updates while reading data
     gyroIO.updateInputs(gyroInputs);
     Logger.processInputs("Drive/Gyro", gyroInputs);
-    for (Module module : swerveIO.getModules()) {
+    for (Module module : modules) {
       module.periodic();
     }
     ODOMETRY_LOCK.unlock();
 
     // Stop moving when disabled
     if (DriverStation.isDisabled()) {
-      for (Module module : swerveIO.getModules()) {
+      for (Module module : modules) {
         module.stop();
       }
 
@@ -103,12 +111,12 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     // Update odometry
-    final double[] sampleTimestamps = swerveIO.getModules()[0].getOdometryTimestamps(); // All signals are sampled together
+    final double[] sampleTimestamps = modules[0].getOdometryTimestamps(); // All signals are sampled together
     for (int i = 0; i < sampleTimestamps.length; i++) {
       // Read wheel positions and deltas from each module
       var modulePositions = new SwerveModulePosition[4];
       for (int moduleIndex = 0; moduleIndex < 4; moduleIndex++) {
-        modulePositions[moduleIndex] = swerveIO.getModules()[moduleIndex].getOdometryPositions()[i];
+        modulePositions[moduleIndex] = modules[moduleIndex].getOdometryPositions()[i];
         lastModulePositions[moduleIndex] = modulePositions[moduleIndex];
       }
 
@@ -129,17 +137,17 @@ public class SwerveSubsystem extends SubsystemBase {
    * @param speeds Speeds in meters/sec
    */
   public void runVelocity(ChassisSpeeds speeds) {
-    var discreteSpeeds = ChassisSpeeds.discretize(speeds, 0.02);
-    var setpointStates = kinematics.toSwerveModuleStates(discreteSpeeds);
+    ChassisSpeeds.discretize(speeds, 0.2);
+    var setpointStates = kinematics.toSwerveModuleStates(speeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(setpointStates, SwerveConstants.MAX_SPEED_METERS_PER_SECOND);
 
     // Log unoptimized setpoints
     Logger.recordOutput("SwerveStates/Setpoints", setpointStates);
-    Logger.recordOutput("SwerveChassisSpeeds/Setpoints", discreteSpeeds);
+    Logger.recordOutput("SwerveChassisSpeeds/Setpoints", speeds);
 
     // Send setpoints to modules
     for (int i = 0; i < 4; i++) {
-      swerveIO.getModules()[i].runSetpoint(setpointStates[i]);
+      modules[i].runSetpoint(setpointStates[i]);
     }
 
     // Log optimized setpoints (runSetpoint mutates each state)
@@ -149,7 +157,7 @@ public class SwerveSubsystem extends SubsystemBase {
   /** Runs the drive in a straight line with the specified drive output. */
   public void runCharacterization(double output) {
     for (int i = 0; i < 4; i++) {
-      swerveIO.getModules()[i].runCharacterization(output);
+      modules[i].runCharacterization(output);
     }
   }
 
@@ -180,12 +188,12 @@ public class SwerveSubsystem extends SubsystemBase {
   /** Returns the module states (turn angles and drive velocities) for all of the modules. */
   @AutoLogOutput(key = "SwerveStates/Measured")
   private SwerveModuleState[] getModuleStates() {
-    return Arrays.stream(swerveIO.getModules()).map(Module::getState).toArray(SwerveModuleState[]::new);
+    return Arrays.stream(modules).map(Module::getState).toArray(SwerveModuleState[]::new);
   }
 
   /** Returns the module positions (turn angles and drive positions) for all of the modules. */
   private SwerveModulePosition[] getModulePositions() {
-    return Arrays.stream(swerveIO.getModules()).map(Module::getPosition).toArray(SwerveModulePosition[]::new);
+    return Arrays.stream(modules).map(Module::getPosition).toArray(SwerveModulePosition[]::new);
   }
 
   /** Returns the measured chassis speeds of the robot. */
@@ -196,12 +204,12 @@ public class SwerveSubsystem extends SubsystemBase {
 
   /** Returns the position of each module in radians. */
   public double[] getWheelRadiusCharacterizationPositions() {
-    return Arrays.stream(swerveIO.getModules()).mapToDouble(Module::getWheelRadiusCharacterizationPosition).toArray();
+    return Arrays.stream(modules).mapToDouble(Module::getWheelRadiusCharacterizationPosition).toArray();
   }
 
   /** Returns the average velocity of the modules in rad/sec. */
   public double getFFCharacterizationVelocity() {
-    return Arrays.stream(swerveIO.getModules()).mapToDouble(Module::getFFCharacterizationVelocity).average().orElse(0.0);
+    return Arrays.stream(modules).mapToDouble(Module::getFFCharacterizationVelocity).average().orElse(0.0);
   }
 
   /** Returns the current odometry pose. */
