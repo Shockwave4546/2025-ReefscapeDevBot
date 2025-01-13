@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.0,
-        "y": 4.051
+        "x": 2.0,
+        "y": 7.0
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.0,
-        "y": 4.051
+        "x": 3.0,
+        "y": 7.0
       },
       "isLocked": false,
-      "linkedName": "TestPath.1"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 8.064968697165027,
-        "y": 4.051
+        "x": 5.1851128029336735,
+        "y": 7.0
       },
       "prevControl": {
-        "x": 7.0649686971650265,
-        "y": 4.051
+        "x": 4.1851128029336735,
+        "y": 7.0
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "BargeMiddle"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
@@ -42,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 180.0
   },
   "reversed": false,
   "folder": null,

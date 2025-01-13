@@ -13,8 +13,9 @@ public class SwerveConfigs {
 
   static {
     DRIVE_CONFIG
+            .inverted(DRIVE_MOTOR_INVERTED)
             .idleMode(SparkMaxConfig.IdleMode.kBrake)
-            .smartCurrentLimit(MotorConstants.NEO_CURRENT_LIMIT)
+            .smartCurrentLimit(MotorConstants.DRIVE_NEO_CURRENT_LIMIT)
             .voltageCompensation(12.0);
     DRIVE_CONFIG.encoder
             .positionConversionFactor(DRIVE_ENCODER_POSITION_FACTOR)

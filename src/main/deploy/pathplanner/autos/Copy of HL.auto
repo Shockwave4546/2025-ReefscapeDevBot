@@ -7,19 +7,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "TestPath.1"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 3.0
+            "pathName": "TopSource-L"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "TestPath.2"
+            "pathName": "L-TopSource"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "TopSource-K"
           }
         }
       ]

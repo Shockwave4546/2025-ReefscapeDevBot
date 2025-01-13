@@ -7,19 +7,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "TestPath.1"
+            "pathName": "SpinCircle"
           }
         },
         {
           "type": "wait",
           "data": {
-            "waitTime": 3.0
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "TestPath.2"
+            "waitTime": 4.0
           }
         }
       ]

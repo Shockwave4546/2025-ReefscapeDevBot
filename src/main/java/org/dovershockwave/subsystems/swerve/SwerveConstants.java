@@ -40,30 +40,31 @@ public class SwerveConstants {
   public static final int BACK_LEFT_TURN_ID = 23;
   public static final int BACK_RIGHT_TURN_ID = 24;
 
+  public static final boolean DRIVE_MOTOR_INVERTED = true;
   // MAXSwerve with 13 pinion teeth and 22 spur teeth
   public static final double DRIVE_MOTOR_REDUCTION = (45.0 * 22.0) / (13.0 * 15.0);
   public static final double DRIVE_ENCODER_POSITION_FACTOR = (2 * Math.PI) / DRIVE_MOTOR_REDUCTION;
   public static final double DRIVE_ENCODER_VELOCITY_FACTOR = ((2 * Math.PI) / DRIVE_MOTOR_REDUCTION) / 60.0;
-  public static final PIDFGains DRIVE_PIDF = new PIDFGains(0.0187, 0.0, 0.246, 0.0084);
+  public static final PIDFGains DRIVE_PIDF = new PIDFGains(0.0125, 0.0, 0.165, 0.0084);
   public static final double DRIVE_KS = 0.0;
   public static final double DRIVE_KV = 0.0;
 
   public static final boolean TURN_ENCODER_INVERTED = true;
   public static final double TURN_ENCODER_POSITION_FACTOR = 2 * Math.PI;
   public static final double TURN_ENCODER_VELOCITY_FACTOR = (2 * Math.PI) / 60.0;
-  public static final PIDFGains TURN_PIDF = new PIDFGains(0.5, 0.0, 0.0, 0.0);
+  public static final PIDFGains TURN_PIDF = new PIDFGains(3.1, 0.0, 0.875, 0.0);
 
-  public static final PIDConstants TRANSLATION_PID = new PIDConstants(0.0, 0.0, 0.0);
-  public static final PIDConstants ROTATION_PID = new PIDConstants(0.0, 0.0, 0.0);
+  public static final PIDConstants TRANSLATION_PID = new PIDConstants(1.5, 0.0, 0.08);
+  public static final PIDConstants ROTATION_PID = new PIDConstants(2.91, 0.0, 0.094);
   public static final RobotConfig PATH_PLANNER_ROBOT_CONFIG = new RobotConfig(
           45.3592,  // Robot mass (kg)
-          6.883,             // Robot MOI (kg m^2)
+          3.5,             // Robot MOI (kg m^2)
           new ModuleConfig(
                   WHEEL_RADIUS_METERS,   // Wheel radius (m)
-                  4.65,                        // Max speed (m/s)
+                  3.6,                        // Max speed (m/s)
                   1.43,                        // Wheel COF (unitless)
                   DCMotor.getNEO(1).withReduction(DRIVE_MOTOR_REDUCTION),
-                  MotorConstants.NEO_CURRENT_LIMIT,
+                  MotorConstants.AUTO_DRIVE_NEO_CURRENT_LIMIT,
                   1
           ),
           MODULE_TRANSLATIONS
