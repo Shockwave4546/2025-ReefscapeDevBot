@@ -15,10 +15,12 @@ import org.dovershockwave.subsystems.swerve.gyro.GyroIONavX;
 import org.dovershockwave.subsystems.swerve.module.ModuleIO;
 import org.dovershockwave.subsystems.swerve.module.ModuleIOSpark;
 import org.dovershockwave.subsystems.swerve.module.ModuleType;
+import org.dovershockwave.subsystems.vision.*;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class RobotContainer {
   protected final SwerveSubsystem swerve;
+  private final VisionSubsystem vision;
   protected final CommandXboxController driverController = new CommandXboxController(Constants.DRIVER_CONTROLLER_PORT);
   protected final CommandXboxController operatorController = new CommandXboxController(Constants.OPERATOR_CONTROLLER_PORT);
 
@@ -32,16 +34,25 @@ public class RobotContainer {
                 new ModuleIOSpark(ModuleType.FRONT_LEFT),
                 new ModuleIOSpark(ModuleType.FRONT_RIGHT),
                 new ModuleIOSpark(ModuleType.BACK_LEFT),
-                new ModuleIOSpark(ModuleType.BACK_RIGHT)
-        );
+                new ModuleIOSpark(ModuleType.BACK_RIGHT));
+
+        vision = new VisionSubsystem(
+                swerve::addVisionMeasurement,
+                new VisionIOPhotonVision(VisionConstants.REEF_CAMERA, VisionConstants.ROBOT_TO_REEF_CAMERA),
+                new VisionIOPhotonVision(VisionConstants.HUMAN_PLAYER_STATION_CAMERA, VisionConstants.ROBOT_TO_HUMAN_PLAYER_CAMERA));
         break;
       case SIM:
         // TODO: 1/11/2025 Implement simulation modes
         swerve = new SwerveSubsystem(new GyroIO() {}, new ModuleIO() {}, new ModuleIO() {}, new ModuleIO() {}, new ModuleIO() {});
+        vision = new VisionSubsystem(
+                swerve::addVisionMeasurement,
+                new VisionIOPhotonVisionSim(VisionConstants.REEF_CAMERA, VisionConstants.ROBOT_TO_REEF_CAMERA, swerve::getPose),
+                new VisionIOPhotonVisionSim(VisionConstants.HUMAN_PLAYER_STATION_CAMERA, VisionConstants.ROBOT_TO_HUMAN_PLAYER_CAMERA, swerve::getPose));
         break;
       case REPLAY:
       default:
         swerve = new SwerveSubsystem(new GyroIO() {}, new ModuleIO() {}, new ModuleIO() {}, new ModuleIO() {}, new ModuleIO() {});
+        vision = new VisionSubsystem(swerve::addVisionMeasurement, new VisionIO() {}, new VisionIO() {});
     }
 
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
