@@ -8,43 +8,11 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.868622176053701,
-        "y": 3.753939590348177
+        "x": 6.603126427275125,
+        "y": 6.2499184161243315
       },
       "isLocked": false,
       "linkedName": "ReefH"
-    },
-    {
-      "anchor": {
-        "x": 5.930435168210428,
-        "y": 5.550901426975597
-      },
-      "prevControl": {
-        "x": 6.0418977383716985,
-        "y": 5.327124539310575
-      },
-      "nextControl": {
-        "x": 5.736660376607196,
-        "y": 5.939931750878681
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 4.033219168529305,
-        "y": 6.5196910873710054
-      },
-      "prevControl": {
-        "x": 4.400074821026979,
-        "y": 6.397846695215545
-      },
-      "nextControl": {
-        "x": 3.216865307668187,
-        "y": 6.7908280843974245
-      },
-      "isLocked": false,
-      "linkedName": null
     },
     {
       "anchor": {
@@ -52,8 +20,8 @@
         "y": 7.302751820798802
       },
       "prevControl": {
-        "x": 2.99678339024263,
-        "y": 6.765544801211919
+        "x": 2.681432657048701,
+        "y": 6.426302814093215
       },
       "nextControl": null,
       "isLocked": false,
@@ -62,7 +30,7 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 2.0,
+      "waypointRelativePos": 0.6283571105072463,
       "rotationDegrees": -54.0
     }
   ],
@@ -72,8 +40,8 @@
   "globalConstraints": {
     "maxVelocity": 3.6,
     "maxAcceleration": 4.0,
-    "maxAngularVelocity": 180.0,
-    "maxAngularAcceleration": 360.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
     "unlimited": false
   },
