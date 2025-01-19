@@ -15,12 +15,11 @@ import org.dovershockwave.subsystems.swerve.gyro.GyroIONavX;
 import org.dovershockwave.subsystems.swerve.module.ModuleIO;
 import org.dovershockwave.subsystems.swerve.module.ModuleIOSpark;
 import org.dovershockwave.subsystems.swerve.module.ModuleType;
-import org.dovershockwave.subsystems.vision.*;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class RobotContainer {
   protected final SwerveSubsystem swerve;
-  private final VisionSubsystem vision;
+//  private final VisionSubsystem vision;
   protected final CommandXboxController driverController = new CommandXboxController(Constants.DRIVER_CONTROLLER_PORT);
   protected final CommandXboxController operatorController = new CommandXboxController(Constants.OPERATOR_CONTROLLER_PORT);
 
@@ -36,33 +35,38 @@ public class RobotContainer {
                 new ModuleIOSpark(ModuleType.BACK_LEFT),
                 new ModuleIOSpark(ModuleType.BACK_RIGHT));
 
-        vision = new VisionSubsystem(
-                swerve::addVisionMeasurement,
-                new VisionIOPhotonVision(VisionConstants.REEF_CAMERA, VisionConstants.ROBOT_TO_REEF_CAMERA),
-                new VisionIOPhotonVision(VisionConstants.HUMAN_PLAYER_STATION_CAMERA, VisionConstants.ROBOT_TO_HUMAN_PLAYER_CAMERA));
+//        vision = new VisionSubsystem(
+//                swerve::addVisionMeasurement,
+//                new VisionIOPhotonVision(VisionConstants.REEF_CAMERA, VisionConstants.ROBOT_TO_REEF_CAMERA),
+//                new VisionIOPhotonVision(VisionConstants.HUMAN_PLAYER_STATION_CAMERA, VisionConstants.ROBOT_TO_HUMAN_PLAYER_CAMERA));
         break;
       case SIM:
         // TODO: 1/11/2025 Implement simulation modes
         swerve = new SwerveSubsystem(new GyroIO() {}, new ModuleIO() {}, new ModuleIO() {}, new ModuleIO() {}, new ModuleIO() {});
-        vision = new VisionSubsystem(
-                swerve::addVisionMeasurement,
-                new VisionIOPhotonVisionSim(VisionConstants.REEF_CAMERA, VisionConstants.ROBOT_TO_REEF_CAMERA, swerve::getPose),
-                new VisionIOPhotonVisionSim(VisionConstants.HUMAN_PLAYER_STATION_CAMERA, VisionConstants.ROBOT_TO_HUMAN_PLAYER_CAMERA, swerve::getPose));
+//        vision = new VisionSubsystem(
+//                swerve::addVisionMeasurement,
+//                new VisionIOPhotonVisionSim(VisionConstants.REEF_CAMERA, VisionConstants.ROBOT_TO_REEF_CAMERA, swerve::getPose),
+//                new VisionIOPhotonVisionSim(VisionConstants.HUMAN_PLAYER_STATION_CAMERA, VisionConstants.ROBOT_TO_HUMAN_PLAYER_CAMERA, swerve::getPose));
         break;
       case REPLAY:
       default:
         swerve = new SwerveSubsystem(new GyroIO() {}, new ModuleIO() {}, new ModuleIO() {}, new ModuleIO() {}, new ModuleIO() {});
-        vision = new VisionSubsystem(swerve::addVisionMeasurement, new VisionIO() {}, new VisionIO() {});
+//        vision = new VisionSubsystem(swerve::addVisionMeasurement, new VisionIO() {}, new VisionIO() {});
     }
 
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
     if (!isCompetitionMatch()) {
       autoChooser.addOption("Drive Simple FF Characterization", new FeedforwardCharacterizationCommand(swerve));
-      autoChooser.addOption("Drive SysId (Quasistatic Forward)", swerve.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-      autoChooser.addOption("Drive SysId (Quasistatic Reverse)", swerve.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-      autoChooser.addOption("Drive SysId (Dynamic Forward)", swerve.sysIdDynamic(SysIdRoutine.Direction.kForward));
-      autoChooser.addOption("Drive SysId (Dynamic Reverse)", swerve.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+      autoChooser.addOption("Drive SysId (Quasistatic Forward)", swerve.sysIdDriveQuasistatic(SysIdRoutine.Direction.kForward));
+      autoChooser.addOption("Drive SysId (Quasistatic Reverse)", swerve.sysIdDriveQuasistatic(SysIdRoutine.Direction.kReverse));
+      autoChooser.addOption("Drive SysId (Dynamic Forward)", swerve.sysIdDriveDynamic(SysIdRoutine.Direction.kForward));
+      autoChooser.addOption("Drive SysId (Dynamic Reverse)", swerve.sysIdDriveDynamic(SysIdRoutine.Direction.kReverse));
+
+      autoChooser.addOption("Turn SysId (Quasistatic Forward)", swerve.sysIdTurnQuasistatic(SysIdRoutine.Direction.kForward));
+      autoChooser.addOption("Turn SysId (Quasistatic Reverse)", swerve.sysIdTurnQuasistatic(SysIdRoutine.Direction.kReverse));
+      autoChooser.addOption("Turn SysId (Dynamic Forward)", swerve.sysIdTurnDynamic(SysIdRoutine.Direction.kForward));
+      autoChooser.addOption("Turn SysId (Dynamic Reverse)", swerve.sysIdTurnDynamic(SysIdRoutine.Direction.kReverse));
     }
 
     configureBindings();

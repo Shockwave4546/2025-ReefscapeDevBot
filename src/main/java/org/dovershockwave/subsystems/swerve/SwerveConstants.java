@@ -14,9 +14,9 @@ public class SwerveConstants {
 
   public static final double WHEEL_RADIUS_METERS = Units.inchesToMeters(1.5);
   // Distance between centers of left and right wheels on robot
-  public static final double TRACK_WIDTH_METERS = Units.inchesToMeters(26.019);
+  public static final double TRACK_WIDTH_METERS = 0.545;
   // Distance between front and back wheels on robot
-  public static final double WHEEL_BASE_METERS = Units.inchesToMeters(26.019);
+  public static final double WHEEL_BASE_METERS = 0.545;
   public static final double DRIVE_BASE_RADIUS = Math.sqrt(Math.pow(WHEEL_BASE_METERS, 2) + Math.pow(TRACK_WIDTH_METERS, 2));
   public static final double MAX_SPEED_METERS_PER_SECOND = 4.65;
   // 4.97523543 rad/s OR
@@ -54,11 +54,13 @@ public class SwerveConstants {
   public static final double TURN_ENCODER_VELOCITY_FACTOR = (2 * Math.PI) / 60.0;
   public static final PIDFGains TURN_PIDF = new PIDFGains(3.1, 0.0, 0.875, 0.0);
 
-  public static final PIDConstants TRANSLATION_PID = new PIDConstants(1.5, 0.0, 0.08);
-  public static final PIDConstants ROTATION_PID = new PIDConstants(2.91, 0.0, 0.094);
+  public static final PIDConstants TRANSLATION_PID = new PIDConstants(0.0, 0.0, 0.0);
+  public static final PIDConstants ROTATION_PID = new PIDConstants(0.0, 0.0, 0.0);
+//  public static final PIDConstants TRANSLATION_PID = new PIDConstants(1.5, 0.0, 0.08);
+//  public static final PIDConstants ROTATION_PID = new PIDConstants(2.91, 0.0, 0.094);
   public static final RobotConfig PATH_PLANNER_ROBOT_CONFIG = new RobotConfig(
-          45.3592,  // Robot mass (kg)
-          3.5,             // Robot MOI (kg m^2)
+          47.63,  // Robot mass (kg)
+          5,             // Robot MOI (kg m^2)
           new ModuleConfig(
                   WHEEL_RADIUS_METERS,   // Wheel radius (m)
                   3.6,                        // Max speed (m/s)

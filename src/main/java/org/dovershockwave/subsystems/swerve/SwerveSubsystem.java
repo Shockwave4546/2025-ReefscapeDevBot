@@ -42,7 +42,8 @@ public class SwerveSubsystem extends SubsystemBase {
   private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
   private final Alert gyroDisconnectedAlert = new Alert("Disconnected gyro", Alert.AlertType.kError);
   private final GyroIO gyroIO;
-  private final SysIdRoutine sysId;
+  private final SysIdRoutine driveSysId;
+  private final SysIdRoutine turnSysId;
 
   private final Module[] modules;
 
@@ -80,14 +81,23 @@ public class SwerveSubsystem extends SubsystemBase {
     PathPlannerLogging.setLogActivePathCallback((activePath) -> Logger.recordOutput("Odometry/Trajectory", activePath.toArray(new Pose2d[0])));
     PathPlannerLogging.setLogTargetPoseCallback((targetPose) -> Logger.recordOutput("Odometry/TrajectorySetpoint", targetPose));
 
-    sysId = new SysIdRoutine(
+    driveSysId = new SysIdRoutine(
             new SysIdRoutine.Config(
                     null,
                     null,
                     null,
-                    (state) -> Logger.recordOutput("Drive/SysIdState", state.toString())),
+                    (state) -> Logger.recordOutput("Drive/DriveSysIdState", state.toString())),
             new SysIdRoutine.Mechanism(
-                    (voltage) -> runCharacterization(voltage.in(Volts)), null, this));
+                    (voltage) -> runDriveCharacterization(voltage.in(Volts)), null, this));
+
+    turnSysId = new SysIdRoutine(
+            new SysIdRoutine.Config(
+                    null,
+                    null,
+                    null,
+                    (state) -> Logger.recordOutput("Drive/TurnSysIdState", state.toString())),
+            new SysIdRoutine.Mechanism(
+                    (voltage) -> runTurnCharacterization(voltage.in(Volts)), null, this));
   }
 
   @Override public void periodic() {
@@ -155,9 +165,22 @@ public class SwerveSubsystem extends SubsystemBase {
   }
 
   /** Runs the drive in a straight line with the specified drive output. */
-  public void runCharacterization(double output) {
+  public void runDriveCharacterization(double output) {
     for (int i = 0; i < 4; i++) {
-      modules[i].runCharacterization(output);
+      modules[i].runDriveCharacterization(output);
+    }
+  }
+
+
+  // front right (1), back left (2)
+  public void runTurnCharacterization(double output) {
+    modules[0].setTurnPosition(Rotation2d.fromDegrees(-45));
+    modules[1].setTurnPosition(Rotation2d.fromDegrees(45));
+    modules[2].setTurnPosition(Rotation2d.fromDegrees(-135));
+    modules[3].setTurnPosition(Rotation2d.fromDegrees(135));
+    for (int i = 0; i < 4; i++) {
+      final boolean invertSpeed = i == 1 || i == 2;
+      modules[i].runTurnCharacterization(invertSpeed ? output * -1 : output);
     }
   }
 
@@ -176,13 +199,21 @@ public class SwerveSubsystem extends SubsystemBase {
   }
 
   /** Returns a command to run a quasistatic test in the specified direction. */
-  public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
-    return run(() -> runCharacterization(0.0)).withTimeout(1.0).andThen(sysId.quasistatic(direction));
+  public Command sysIdDriveQuasistatic(SysIdRoutine.Direction direction) {
+    return run(() -> runDriveCharacterization(0.0)).withTimeout(1.0).andThen(driveSysId.quasistatic(direction));
   }
 
   /** Returns a command to run a dynamic test in the specified direction. */
-  public Command sysIdDynamic(SysIdRoutine.Direction direction) {
-    return run(() -> runCharacterization(0.0)).withTimeout(1.0).andThen(sysId.dynamic(direction));
+  public Command sysIdDriveDynamic(SysIdRoutine.Direction direction) {
+    return run(() -> runDriveCharacterization(0.0)).withTimeout(1.0).andThen(driveSysId.dynamic(direction));
+  }
+
+  public Command sysIdTurnQuasistatic(SysIdRoutine.Direction direction) {
+    return run(() -> runTurnCharacterization(0.0)).withTimeout(1.0).andThen(turnSysId.quasistatic(direction));
+  }
+
+  public Command sysIdTurnDynamic(SysIdRoutine.Direction direction) {
+    return run(() -> runTurnCharacterization(0.0)).withTimeout(1.0).andThen(turnSysId.dynamic(direction));
   }
 
   /** Returns the module states (turn angles and drive velocities) for all of the modules. */

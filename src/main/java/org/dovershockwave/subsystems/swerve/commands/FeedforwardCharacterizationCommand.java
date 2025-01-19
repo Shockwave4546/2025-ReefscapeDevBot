@@ -24,14 +24,14 @@ public class FeedforwardCharacterizationCommand extends SequentialCommandGroup {
             new InstantCommand(voltageSamples::clear),
 
             // Allow modules to orient
-            new RunCommand(() -> swerve.runCharacterization(0.0), swerve).withTimeout(FF_START_DELAY),
+            new RunCommand(() -> swerve.runDriveCharacterization(0.0), swerve).withTimeout(FF_START_DELAY),
 
             // Start timer
             new InstantCommand(timer::restart),
 
             new RunCommand(() -> {
               double voltage = timer.get() * FF_RAMP_RATE;
-              swerve.runCharacterization(voltage);
+              swerve.runDriveCharacterization(voltage);
               velocitySamples.add(swerve.getFFCharacterizationVelocity());
               voltageSamples.add(voltage);
             }, swerve).finallyDo(() -> {
