@@ -13,9 +13,9 @@ public class VisionIOPhotonVision implements VisionIO {
   protected final PhotonCamera camera;
   protected final Transform3d robotToCamera;
 
-  public VisionIOPhotonVision(String name, Transform3d robotToCamera) {
-    camera = new PhotonCamera(name);
-    this.robotToCamera = robotToCamera;
+  public VisionIOPhotonVision(CameraType type) {
+    camera = new PhotonCamera(type.name);
+    this.robotToCamera = type.robotToCamera;
   }
 
   @Override public void updateInputs(VisionIOInputs inputs) {
@@ -29,20 +29,29 @@ public class VisionIOPhotonVision implements VisionIO {
       if (result.hasTargets()) {
         final var bestTarget = result.getBestTarget();
         final var bestTargetPose = bestTarget.getBestCameraToTarget();
-        inputs.latestTargetObservation = new TargetObservation(
+        inputs.bestTargetObservation = new TargetObservation(
                 bestTarget.getFiducialId(),
                 Rotation2d.fromDegrees(bestTarget.getYaw()),
                 Rotation2d.fromDegrees(bestTarget.getPitch()),
                 bestTargetPose.getTranslation(),
                 bestTargetPose.getTranslation().getNorm());
+
+        inputs.latestTargetObservations = result.targets.stream().map(target -> {
+          final var targetPose = target.getBestCameraToTarget();
+          return new TargetObservation(
+                  target.getFiducialId(),
+                  Rotation2d.fromDegrees(target.getYaw()),
+                  Rotation2d.fromDegrees(target.getPitch()),
+                  targetPose.getTranslation(),
+                  targetPose.getTranslation().getNorm());
+        }).toArray(TargetObservation[]::new);
       } else {
-        inputs.latestTargetObservation = new TargetObservation(Integer.MIN_VALUE, new Rotation2d(), new Rotation2d(), new Translation3d(), 0.0);
+        inputs.bestTargetObservation = new TargetObservation(Integer.MIN_VALUE, new Rotation2d(), new Rotation2d(), new Translation3d(), 0.0);
+        inputs.latestTargetObservations = new TargetObservation[0];
       }
 
       // Add pose observation
-      if (result.multitagResult.isPresent()) {
-        final var multitagResult = result.multitagResult.get();
-
+      result.multitagResult.ifPresent(multitagResult -> {
         // Calculate robot pose
         final var fieldToCamera = multitagResult.estimatedPose.best;
         final var fieldToRobot = fieldToCamera.plus(robotToCamera.inverse());
@@ -58,15 +67,13 @@ public class VisionIOPhotonVision implements VisionIO {
         tagIds.addAll(multitagResult.fiducialIDsUsed);
 
         // Add observation
-        poseObservations.add(
-                new PoseObservation(
-                        result.getTimestampSeconds(), // Timestamp
-                        robotPose, // 3D pose estimate
-                        multitagResult.estimatedPose.ambiguity, // Ambiguity
-                        multitagResult.fiducialIDsUsed.size(), // Tag count
-                        totalTagDistance / result.targets.size(), // Average tag distance
-                        PoseObservationType.PHOTONVISION)); // Observation type
-      }
+        poseObservations.add(new PoseObservation(
+                result.getTimestampSeconds(), // Timestamp
+                robotPose, // 3D pose estimate
+                multitagResult.estimatedPose.ambiguity, // Ambiguity
+                multitagResult.fiducialIDsUsed.size(), // Tag count
+                totalTagDistance / result.targets.size())); // Average tag distance
+      });
     }
 
     // Save pose observations to inputs object

@@ -1,7 +1,6 @@
 package org.dovershockwave.subsystems.vision;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Transform3d;
 import org.photonvision.simulation.PhotonCameraSim;
 import org.photonvision.simulation.SimCameraProperties;
 import org.photonvision.simulation.VisionSystemSim;
@@ -14,12 +13,12 @@ public class VisionIOPhotonVisionSim extends VisionIOPhotonVision {
   private final Supplier<Pose2d> poseSupplier;
   private final PhotonCameraSim cameraSim;
 
-  public VisionIOPhotonVisionSim(String name, Transform3d robotToCamera, Supplier<Pose2d> poseSupplier) {
-    super(name, robotToCamera);
+  public VisionIOPhotonVisionSim(CameraType type, Supplier<Pose2d> poseSupplier) {
+    super(type);
     this.poseSupplier = poseSupplier;
 
     if (visionSim == null) {
-      visionSim = new VisionSystemSim("main");
+      visionSim = new VisionSystemSim("Main");
       visionSim.addAprilTags(VisionConstants.APRIL_TAG_FIELD);
     }
 
