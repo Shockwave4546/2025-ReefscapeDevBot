@@ -27,6 +27,7 @@ import org.dovershockwave.subsystems.swerve.module.Module;
 import org.dovershockwave.subsystems.swerve.module.ModuleIO;
 import org.dovershockwave.subsystems.swerve.module.ModuleType;
 import org.dovershockwave.utils.LocalADStarAK;
+import org.dovershockwave.utils.PIDFGains;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -139,6 +140,14 @@ public class SwerveSubsystem extends SubsystemBase {
 
     // Update gyro alert
     gyroDisconnectedAlert.set(!gyroInputs.connected && Constants.CURRENT_MODE != Constants.Mode.SIM);
+  }
+
+  public void multiplyFF(double multiplier) {
+    for (Module module : modules) {
+      final var curr = module.getDrivePIDF();
+      final var newFF = (1 + multiplier) * curr.ff();
+      module.setDrivePIDF(new PIDFGains(curr.p(), curr.i(), curr.d(), newFF));
+    }
   }
 
   /**

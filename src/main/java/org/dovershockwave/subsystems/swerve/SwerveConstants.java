@@ -7,7 +7,11 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import org.dovershockwave.MotorConstants;
+import org.dovershockwave.utils.InterpolatingDoubleTreeMap;
 import org.dovershockwave.utils.PIDFGains;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class SwerveConstants {
   public static final double ODOMETRY_FREQUENCY = 100.0; // Hz
@@ -46,18 +50,18 @@ public class SwerveConstants {
   public static final double DRIVE_ENCODER_POSITION_FACTOR = (2 * Math.PI) / DRIVE_MOTOR_REDUCTION;
   public static final double DRIVE_ENCODER_VELOCITY_FACTOR = ((2 * Math.PI) / DRIVE_MOTOR_REDUCTION) / 60.0;
   public static final PIDFGains DRIVE_PIDF = new PIDFGains(0.0125, 0.0, 0.165, 0.0084);
-  public static final double DRIVE_KS = 0.0;
-  public static final double DRIVE_KV = 0.0;
+  public static final double DRIVE_KS = 0.16512;
+  public static final double DRIVE_KV = 0.10333;
 
   public static final boolean TURN_ENCODER_INVERTED = true;
   public static final double TURN_ENCODER_POSITION_FACTOR = 2 * Math.PI;
   public static final double TURN_ENCODER_VELOCITY_FACTOR = (2 * Math.PI) / 60.0;
-  public static final PIDFGains TURN_PIDF = new PIDFGains(3.1, 0.0, 0.875, 0.0);
+  public static final PIDFGains TURN_PIDF = new PIDFGains(3.1, 0.0, 0.875);
 
-  public static final PIDConstants TRANSLATION_PID = new PIDConstants(0.0, 0.0, 0.0);
-  public static final PIDConstants ROTATION_PID = new PIDConstants(0.0, 0.0, 0.0);
-//  public static final PIDConstants TRANSLATION_PID = new PIDConstants(1.5, 0.0, 0.08);
-//  public static final PIDConstants ROTATION_PID = new PIDConstants(2.91, 0.0, 0.094);
+//  public static final PIDConstants TRANSLATION_PID = new PIDConstants(0.0, 0.0, 0.0);
+//  public static final PIDConstants ROTATION_PID = new PIDConstants(0.0, 0.0, 0.0);
+  public static final PIDConstants TRANSLATION_PID = new PIDConstants(3.0, 0.0, 0.08);
+  public static final PIDConstants ROTATION_PID = new PIDConstants(2.91, 0.0, 0.094);
   public static final RobotConfig PATH_PLANNER_ROBOT_CONFIG = new RobotConfig(
           47.63,  // Robot mass (kg)
           5,             // Robot MOI (kg m^2)
@@ -71,4 +75,24 @@ public class SwerveConstants {
           ),
           MODULE_TRANSLATIONS
   );
+
+  private static final Map<Double, Double> DRIVE_FF_MAP = new HashMap<>();
+
+  static {
+    DRIVE_FF_MAP.put(0.0, 0.0);
+    DRIVE_FF_MAP.put(0.25, 0.0101);
+    DRIVE_FF_MAP.put(0.5, 0.0093);
+    DRIVE_FF_MAP.put(0.75, 0.0089);
+    DRIVE_FF_MAP.put(1.0, 0.0088);
+    DRIVE_FF_MAP.put(1.25, 0.0087);
+    DRIVE_FF_MAP.put(1.5, 0.0087);
+    DRIVE_FF_MAP.put(1.75, 0.0087);
+    DRIVE_FF_MAP.put(2.0, 0.0086);
+    DRIVE_FF_MAP.put(2.25, 0.0086);
+    DRIVE_FF_MAP.put(2.5, 0.0085);
+    DRIVE_FF_MAP.put(2.75, 0.0085);
+    DRIVE_FF_MAP.put(10.0, 0.0085);
+  }
+
+  public static final InterpolatingDoubleTreeMap DRIVE_FF_TABLE = new InterpolatingDoubleTreeMap(DRIVE_FF_MAP);
 }

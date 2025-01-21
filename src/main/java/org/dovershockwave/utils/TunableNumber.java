@@ -56,6 +56,10 @@ public class TunableNumber {
     }
   }
 
+  public void set(double val) {
+    dashboardNumber.set(val);
+  }
+
   /**
    * Get the current value, from dashboard if available and in tuning mode.
    *

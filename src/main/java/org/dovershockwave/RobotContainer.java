@@ -3,11 +3,13 @@ package org.dovershockwave;
 import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import org.dovershockwave.subsystems.swerve.SwerveSubsystem;
 import org.dovershockwave.subsystems.swerve.commands.FeedforwardCharacterizationCommand;
+import org.dovershockwave.subsystems.swerve.commands.GoDistanceCommand;
 import org.dovershockwave.subsystems.swerve.commands.ResetFieldOrientatedDriveCommand;
 import org.dovershockwave.subsystems.swerve.commands.SwerveDriveCommand;
 import org.dovershockwave.subsystems.swerve.gyro.GyroIO;
@@ -74,9 +76,18 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
-    swerve.setDefaultCommand(new SwerveDriveCommand(swerve, driverController));
+
+//    swerve.setDefaultCommand(new SwerveDriveCommand(swerve, driverController));
     driverController.b().onTrue(new ResetFieldOrientatedDriveCommand(swerve));
-    driverController.x().onTrue(new InstantCommand(swerve::stopWithX, swerve));
+//    driverController.x().onTrue(new InstantCommand(swerve::stopWithX, swerve));
+
+    driverController.leftBumper().onTrue(new InstantCommand(() -> swerve.multiplyFF(-0.1)).ignoringDisable(true));
+    driverController.rightBumper().onTrue(new InstantCommand(() -> swerve.multiplyFF(0.1)).ignoringDisable(true));
+    driverController.x().onTrue(new GoDistanceCommand(swerve, driverController, false));
+    driverController.y().onTrue(new GoDistanceCommand(swerve, driverController, true));
+
+    driverController.povDown().onTrue(new InstantCommand(() -> swerve.setDefaultCommand(new SwerveDriveCommand(swerve, driverController))));
+    driverController.povUp().onTrue(new InstantCommand(() -> CommandScheduler.getInstance().removeDefaultCommand(swerve)));
   }
 
   public static boolean isCompetitionMatch() {

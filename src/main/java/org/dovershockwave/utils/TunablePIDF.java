@@ -27,6 +27,17 @@ public class TunablePIDF {
     }
   }
 
+  public void setGains(PIDFGains gains) {
+    p.set(gains.p());
+    i.set(gains.i());
+    d.set(gains.d());
+    ff.set(gains.ff());
+  }
+
+  public PIDFGains getGains() {
+    return new PIDFGains(p.get(), i.get(), d.get(), ff.get());
+  }
+
   public boolean isManualMode() {
     return isManualMode.get();
   }

@@ -5,6 +5,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.Alert;
 import org.dovershockwave.subsystems.swerve.SwerveConstants;
+import org.dovershockwave.utils.PIDFGains;
 import org.dovershockwave.utils.TunablePIDF;
 import org.littletonrobotics.junction.Logger;
 
@@ -59,6 +60,24 @@ public class Module {
     // Apply setpoints
     io.setDriveVelocity(state.speedMetersPerSecond / SwerveConstants.WHEEL_RADIUS_METERS);
     io.setTurnPosition(state.angle);
+  }
+
+  public void setDrivePIDF(PIDFGains gains) {
+    io.setDrivePIDF(gains);
+    drivePIDF.setGains(gains);
+  }
+
+  public PIDFGains getDrivePIDF() {
+    return drivePIDF.getGains();
+  }
+
+  public void setTurnPIDF(PIDFGains gains) {
+    io.setTurnPIDF(gains);
+    turnPIDF.setGains(gains);
+  }
+
+  public PIDFGains getTurnPIDF() {
+    return turnPIDF.getGains();
   }
 
   /** Runs the module with the specified output while controlling to zero degrees. */
