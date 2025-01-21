@@ -8,18 +8,22 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import org.dovershockwave.subsystems.swerve.SwerveSubsystem;
 import org.dovershockwave.utils.TunableNumber;
 
-public class GoDistanceCommand extends Command {
-  public static final TunableNumber distance = new TunableNumber("GoDistanceCommand/Distance", 3.5);
-  public static final TunableNumber velocity = new TunableNumber("GoDistanceCommand/XVelocity", 2.0);
+/**
+ * Command for tuning PID and FF constants for the drive motors of the swerve drive.
+ * Right trigger to end the command.
+ */
+public class DriveLinearVelocityCommand extends Command {
+  public static final TunableNumber distance = new TunableNumber("DriveLinearVelocityCommand/DistanceMeters", 3.5);
+  public static final TunableNumber velocity = new TunableNumber("DriveLinearVelocityCommand/XVelocityMPS", 2.0);
 
   private final SwerveSubsystem swerve;
   private final CommandXboxController controller;
-  private final boolean invert;
+  private final boolean invertDriveDirection;
 
-  public GoDistanceCommand(SwerveSubsystem swerve, CommandXboxController controller, boolean invert) {
+  public DriveLinearVelocityCommand(SwerveSubsystem swerve, CommandXboxController controller, boolean invertDriveDirection) {
     this.swerve = swerve;
     this.controller = controller;
-    this.invert = invert;
+    this.invertDriveDirection = invertDriveDirection;
   }
 
   @Override public void initialize() {
@@ -27,7 +31,7 @@ public class GoDistanceCommand extends Command {
   }
 
   @Override public void execute() {
-    swerve.runVelocity(new ChassisSpeeds(invert ? -1 * velocity.get() : velocity.get(), 0.0, 0.0));
+    swerve.runVelocity(new ChassisSpeeds(invertDriveDirection ? -1 * velocity.get() : velocity.get(), 0.0, 0.0));
   }
 
   @Override public void end(boolean interrupted) {

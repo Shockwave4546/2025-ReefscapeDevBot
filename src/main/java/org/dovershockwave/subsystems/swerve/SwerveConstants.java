@@ -7,11 +7,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import org.dovershockwave.MotorConstants;
-import org.dovershockwave.utils.InterpolatingDoubleTreeMap;
 import org.dovershockwave.utils.PIDFGains;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class SwerveConstants {
   public static final double ODOMETRY_FREQUENCY = 100.0; // Hz
@@ -23,7 +19,6 @@ public class SwerveConstants {
   public static final double WHEEL_BASE_METERS = 0.545;
   public static final double DRIVE_BASE_RADIUS = Math.sqrt(Math.pow(WHEEL_BASE_METERS, 2) + Math.pow(TRACK_WIDTH_METERS, 2));
   public static final double MAX_SPEED_METERS_PER_SECOND = 4.65;
-  // 4.97523543 rad/s OR
   public static final double MAX_ANGULAR_SPEED_RAD_PER_SEC = MAX_SPEED_METERS_PER_SECOND / DRIVE_BASE_RADIUS;
   public static final Translation2d[] MODULE_TRANSLATIONS = {
           new Translation2d(WHEEL_BASE_METERS / 2, TRACK_WIDTH_METERS / 2),
@@ -50,8 +45,6 @@ public class SwerveConstants {
   public static final double DRIVE_ENCODER_POSITION_FACTOR = (2 * Math.PI) / DRIVE_MOTOR_REDUCTION;
   public static final double DRIVE_ENCODER_VELOCITY_FACTOR = ((2 * Math.PI) / DRIVE_MOTOR_REDUCTION) / 60.0;
   public static final PIDFGains DRIVE_PIDF = new PIDFGains(0.0125, 0.0, 0.165, 0.0084);
-  public static final double DRIVE_KS = 0.16512;
-  public static final double DRIVE_KV = 0.10333;
 
   public static final boolean TURN_ENCODER_INVERTED = true;
   public static final double TURN_ENCODER_POSITION_FACTOR = 2 * Math.PI;
@@ -75,24 +68,4 @@ public class SwerveConstants {
           ),
           MODULE_TRANSLATIONS
   );
-
-  private static final Map<Double, Double> DRIVE_FF_MAP = new HashMap<>();
-
-  static {
-    DRIVE_FF_MAP.put(0.0, 0.0);
-    DRIVE_FF_MAP.put(0.25, 0.0101);
-    DRIVE_FF_MAP.put(0.5, 0.0093);
-    DRIVE_FF_MAP.put(0.75, 0.0089);
-    DRIVE_FF_MAP.put(1.0, 0.0088);
-    DRIVE_FF_MAP.put(1.25, 0.0087);
-    DRIVE_FF_MAP.put(1.5, 0.0087);
-    DRIVE_FF_MAP.put(1.75, 0.0087);
-    DRIVE_FF_MAP.put(2.0, 0.0086);
-    DRIVE_FF_MAP.put(2.25, 0.0086);
-    DRIVE_FF_MAP.put(2.5, 0.0085);
-    DRIVE_FF_MAP.put(2.75, 0.0085);
-    DRIVE_FF_MAP.put(10.0, 0.0085);
-  }
-
-  public static final InterpolatingDoubleTreeMap DRIVE_FF_TABLE = new InterpolatingDoubleTreeMap(DRIVE_FF_MAP);
 }

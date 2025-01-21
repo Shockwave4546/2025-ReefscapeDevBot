@@ -107,20 +107,11 @@ public class ModuleIOSpark implements ModuleIO {
   }
 
   @Override public void setDriveVelocity(double velocityRadPerSec) {
-//    final var ff = SwerveConstants.DRIVE_FF_TABLE.predict(Math.abs(velocityRadPerSec));
-//    double ff = SwerveConstants.DRIVE_KS * Math.signum(velocityRadPerSec) + SwerveConstants.DRIVE_KV * velocityRadPerSec;
-//    System.out.println("FF: " + ff);
     drivePID.setReference(velocityRadPerSec, SparkBase.ControlType.kVelocity);
-//    drivePID.setReference(
-//            velocityRadPerSec,
-//            SparkBase.ControlType.kVelocity,
-//            ClosedLoopSlot.kSlot0,
-//            ff,
-//            SparkClosedLoopController.ArbFFUnits.kVoltage);
   }
 
   @Override public void setTurnPosition(Rotation2d rotation) {
-    double setpoint = MathUtil.inputModulus(rotation.plus(Rotation2d.fromRadians(type.angleOffset)).getRadians(), 0.0, 2 * Math.PI);
+    final double setpoint = MathUtil.inputModulus(rotation.plus(Rotation2d.fromRadians(type.angleOffset)).getRadians(), 0.0, 2 * Math.PI);
     turnPID.setReference(setpoint, SparkBase.ControlType.kPosition);
   }
 
