@@ -1,5 +1,11 @@
 package org.dovershockwave.subsystems.swerve;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.util.DriveFeedforwards;
+import com.pathplanner.lib.util.PathPlannerLogging;
+import com.pathplanner.lib.util.swerve.SwerveSetpoint;
+import com.pathplanner.lib.util.swerve.SwerveSetpointGenerator;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -58,6 +64,9 @@ public class SwerveSubsystem extends SubsystemBase {
           new SysIdRoutine.Mechanism(
                   (voltage) -> runTurnCharacterization(voltage.in(Volts)), null, this));
 
+  private final SwerveSetpointGenerator setpointGenerator = new SwerveSetpointGenerator(SwerveConstants.PATH_PLANNER_ROBOT_CONFIG, SwerveConstants.MAX_ANGULAR_SPEED_RAD_PER_SEC);
+  private SwerveSetpoint previousSetpoint;
+
   public SwerveSubsystem(GyroIO gyroIO, ModuleIO frontLeft, ModuleIO frontRight, ModuleIO backLeft, ModuleIO backRight) {
     this.gyroIO = gyroIO;
     this.modules = new Module[]{
@@ -67,6 +76,22 @@ public class SwerveSubsystem extends SubsystemBase {
             new Module(backRight, ModuleType.BACK_RIGHT)
     };
 
+    AutoBuilder.configure(
+            this::getPose,
+            this::setPose,
+            this::getChassisSpeeds,
+            speeds -> runVelocity(speeds, true),
+            new PPHolonomicDriveController(SwerveConstants.TRANSLATION_PID, SwerveConstants.ROTATION_PID, 0.02),
+            SwerveConstants.PATH_PLANNER_ROBOT_CONFIG,
+            () -> DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue) == DriverStation.Alliance.Red,
+            this
+    );
+    PathPlannerLogging.setLogActivePathCallback((activePath) -> Logger.recordOutput(
+            "Odometry/Trajectory", activePath.toArray(new Pose2d[0])));
+    PathPlannerLogging.setLogTargetPoseCallback((targetPose) -> Logger.recordOutput(
+            "Odometry/TrajectorySetpoint", targetPose));
+
+    previousSetpoint = new SwerveSetpoint(getChassisSpeeds(), getModuleStates(), DriveFeedforwards.zeros(4));
     SparkOdometryThread.getInstance().start();
   }
 
@@ -133,8 +158,24 @@ public class SwerveSubsystem extends SubsystemBase {
    *
    * @param speeds Speeds in meters/sec
    */
-  public void runVelocity(ChassisSpeeds speeds) {
-    ChassisSpeeds.discretize(speeds, 0.2);
+  public void runVelocity(ChassisSpeeds speeds, boolean useSwerveSetpointGenerator) {
+    if (useSwerveSetpointGenerator) {
+      var setpointStates = kinematics.toSwerveModuleStates(speeds);
+      SwerveDriveKinematics.desaturateWheelSpeeds(setpointStates, SwerveConstants.MAX_SPEED_METERS_PER_SECOND);
+      Logger.recordOutput("SwerveStates/Setpoints", setpointStates);
+      Logger.recordOutput("SwerveChassisSpeeds/Setpoints", speeds);
+
+      previousSetpoint = setpointGenerator.generateSetpoint(previousSetpoint, speeds, 0.02);
+      setpointStates = previousSetpoint.moduleStates();
+      Logger.recordOutput("SwerveStates/SetpointsOptimized", setpointStates);
+
+      for (int i = 0; i < 4; i++) {
+        modules[i].runSetpoint(setpointStates[i]);
+     }
+    } else {
+      ChassisSpeeds.discretize(speeds, 0.02);
+    }
+
     var setpointStates = kinematics.toSwerveModuleStates(speeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(setpointStates, SwerveConstants.MAX_SPEED_METERS_PER_SECOND);
 
@@ -164,7 +205,7 @@ public class SwerveSubsystem extends SubsystemBase {
   }
 
   public void stop() {
-    runVelocity(new ChassisSpeeds());
+    runVelocity(new ChassisSpeeds(), false);
   }
 
   /**

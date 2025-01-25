@@ -12,7 +12,7 @@ import org.dovershockwave.utils.TunableNumber;
 import org.dovershockwave.utils.TunablePIDF;
 import org.littletonrobotics.junction.Logger;
 
-// TODO: 1/20/2025 Add TunablePIDF to this whole class
+// TODO: 1/25/25 Robot relative speed or whatever is messed up in this
 public class MoveToTagCommand extends Command {
   private static final TunableNumber ALIGNMENT_X_METERS_TOLERANCE = new TunableNumber("MoveToTagCommand/AlignmentRadTolerance", VisionConstants.ALIGNMENT_X_METERS_TOLERANCE);
   private static final TunableNumber ALIGNMENT_Y_METERS_TOLERANCE = new TunableNumber("MoveToTagCommand/AlignmentRadTolerance", VisionConstants.ALIGNMENT_Y_METERS_TOLERANCE);
@@ -68,7 +68,7 @@ public class MoveToTagCommand extends Command {
       final var yVelocity = yVelocityPID.calculate(bestTarget.translation().getY(), 0.0);
       final var omega = omegaPID.calculate(swerve.getRotation().getRadians(), position.robotHeading.getRadians());
 
-      swerve.runVelocity(new ChassisSpeeds(xVelocity, yVelocity, omega));
+      swerve.runVelocity(new ChassisSpeeds(xVelocity, yVelocity, omega), false);
 
       Logger.recordOutput("MoveToTagCommand/Target-" + position.id + "/ThetaXCurrent", bestTarget.translation().getX());
       Logger.recordOutput("MoveToTagCommand/Target-" + position.id  + "/ThetaXGoal", 0.0);

@@ -31,7 +31,7 @@ public class DriveAngularVelocityCommand extends Command {
   }
 
   @Override public void execute() {
-    swerve.runVelocity(new ChassisSpeeds(0.0, 0.0, invertDriveDirection ? -1 * velocity.get() : velocity.get()));
+    swerve.runVelocity(new ChassisSpeeds(0.0, 0.0, invertDriveDirection ? -1 * velocity.get() : velocity.get()), false);
   }
 
   @Override public void end(boolean interrupted) {
