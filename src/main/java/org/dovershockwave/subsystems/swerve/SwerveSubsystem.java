@@ -161,7 +161,6 @@ public class SwerveSubsystem extends SubsystemBase {
   public void runVelocity(ChassisSpeeds speeds, boolean useSwerveSetpointGenerator) {
     if (useSwerveSetpointGenerator) {
       var setpointStates = kinematics.toSwerveModuleStates(speeds);
-      SwerveDriveKinematics.desaturateWheelSpeeds(setpointStates, SwerveConstants.MAX_SPEED_METERS_PER_SECOND);
       Logger.recordOutput("SwerveStates/Setpoints", setpointStates);
       Logger.recordOutput("SwerveChassisSpeeds/Setpoints", speeds);
 
@@ -174,22 +173,21 @@ public class SwerveSubsystem extends SubsystemBase {
      }
     } else {
       ChassisSpeeds.discretize(speeds, 0.02);
+      var setpointStates = kinematics.toSwerveModuleStates(speeds);
+      SwerveDriveKinematics.desaturateWheelSpeeds(setpointStates, SwerveConstants.MAX_SPEED_METERS_PER_SECOND);
+
+      // Log unoptimized setpoints
+      Logger.recordOutput("SwerveStates/Setpoints", setpointStates);
+      Logger.recordOutput("SwerveChassisSpeeds/Setpoints", speeds);
+
+      // Send setpoints to modules
+      for (int i = 0; i < 4; i++) {
+        modules[i].runSetpoint(setpointStates[i]);
+      }
+
+      // Log optimized setpoints (runSetpoint mutates each state)
+      Logger.recordOutput("SwerveStates/SetpointsOptimized", setpointStates);
     }
-
-    var setpointStates = kinematics.toSwerveModuleStates(speeds);
-    SwerveDriveKinematics.desaturateWheelSpeeds(setpointStates, SwerveConstants.MAX_SPEED_METERS_PER_SECOND);
-
-    // Log unoptimized setpoints
-    Logger.recordOutput("SwerveStates/Setpoints", setpointStates);
-    Logger.recordOutput("SwerveChassisSpeeds/Setpoints", speeds);
-
-    // Send setpoints to modules
-    for (int i = 0; i < 4; i++) {
-      modules[i].runSetpoint(setpointStates[i]);
-    }
-
-    // Log optimized setpoints (runSetpoint mutates each state)
-    Logger.recordOutput("SwerveStates/SetpointsOptimized", setpointStates);
   }
 
   public void runDriveCharacterization(double volts) {
