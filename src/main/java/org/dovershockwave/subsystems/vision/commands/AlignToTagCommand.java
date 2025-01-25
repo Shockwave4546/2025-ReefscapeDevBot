@@ -13,7 +13,7 @@ import org.dovershockwave.utils.TunablePIDF;
 import org.littletonrobotics.junction.Logger;
 
 public class AlignToTagCommand extends Command {
-  private final TunableNumber alignmentRadTolerance = new TunableNumber("AlignToTagCommand/AlignmentRadTolerance", VisionConstants.ALIGNMENT_RAD_TOLERANCE);
+  private static final TunableNumber ALIGNMENT_RAD_TOLERANCE = new TunableNumber("AlignToTagCommand/AlignmentRadTolerance", VisionConstants.ALIGNMENT_RAD_TOLERANCE);
   private final TunablePIDF tunableOmegaPID = new TunablePIDF("AlignToTagCommand/OmegaPID", VisionConstants.ALIGNMENT_OMEGA_PID);
   private final PIDController omegaPID = new PIDController(tunableOmegaPID.getGains().p(), tunableOmegaPID.getGains().i(), tunableOmegaPID.getGains().d());
   private final SwerveSubsystem swerve;
@@ -32,7 +32,7 @@ public class AlignToTagCommand extends Command {
 
   @Override public void initialize() {
     omegaPID.reset();
-    omegaPID.setTolerance(alignmentRadTolerance.get());
+    omegaPID.setTolerance(ALIGNMENT_RAD_TOLERANCE.get());
     omegaPID.setP(tunableOmegaPID.getGains().p());
     omegaPID.setI(tunableOmegaPID.getGains().i());
     omegaPID.setD(tunableOmegaPID.getGains().d());

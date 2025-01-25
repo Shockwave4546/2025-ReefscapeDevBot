@@ -1,6 +1,5 @@
 package org.dovershockwave;
 
-import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -19,6 +18,7 @@ import org.dovershockwave.subsystems.swerve.module.ModuleIOSpark;
 import org.dovershockwave.subsystems.swerve.module.ModuleType;
 import org.dovershockwave.subsystems.vision.*;
 import org.dovershockwave.subsystems.vision.commands.AlignToTagCommand;
+import org.dovershockwave.subsystems.vision.commands.MoveToTagCommand;
 import org.dovershockwave.subsystems.vision.commands.sysid.SysIdDriveDynamicCommand;
 import org.dovershockwave.subsystems.vision.commands.sysid.SysIdDriveQuasistaticCommand;
 import org.dovershockwave.subsystems.vision.commands.sysid.SysIdTurnQuasistaticCommand;
@@ -88,6 +88,8 @@ public class RobotContainer {
     driverController.x().onTrue(new InstantCommand(swerve::stopWithX, swerve));
 
     driverController.y().onTrue(new AlignToTagCommand(swerve, vision, CameraType.FRONT_CAMERA));
+    driverController.a().onTrue(new MoveToTagCommand(swerve, vision, CameraType.FRONT_CAMERA));
+
 
     driverController.leftBumper().onTrue(new InstantCommand(() -> swerve.multiplyFF(-0.1)).ignoringDisable(true));
     driverController.rightBumper().onTrue(new InstantCommand(() -> swerve.multiplyFF(0.1)).ignoringDisable(true));
