@@ -86,10 +86,8 @@ public class SwerveSubsystem extends SubsystemBase {
             () -> DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue) == DriverStation.Alliance.Red,
             this
     );
-    PathPlannerLogging.setLogActivePathCallback((activePath) -> Logger.recordOutput(
-            "Odometry/Trajectory", activePath.toArray(new Pose2d[0])));
-    PathPlannerLogging.setLogTargetPoseCallback((targetPose) -> Logger.recordOutput(
-            "Odometry/TrajectorySetpoint", targetPose));
+    PathPlannerLogging.setLogActivePathCallback((activePath) -> Logger.recordOutput("Odometry/Trajectory", activePath.toArray(new Pose2d[0])));
+    PathPlannerLogging.setLogTargetPoseCallback((targetPose) -> Logger.recordOutput("Odometry/TrajectorySetpoint", targetPose));
 
     previousSetpoint = new SwerveSetpoint(getChassisSpeeds(), getModuleStates(), DriveFeedforwards.zeros(4));
     SparkOdometryThread.getInstance().start();
