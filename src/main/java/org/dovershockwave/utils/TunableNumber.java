@@ -31,8 +31,8 @@ public class TunableNumber {
 
   public boolean hasChanged(int id) {
     final double currentValue = get();
-    final double lastValue = lastHasChangedValues.get(id);
-    if (currentValue != lastValue) {
+    final Double lastValue = lastHasChangedValues.get(id);
+    if (lastValue == null || currentValue != lastValue) {
       lastHasChangedValues.put(id, currentValue);
       return true;
     }

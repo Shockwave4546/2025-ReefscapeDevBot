@@ -4,21 +4,24 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import org.dovershockwave.subsystems.swerve.SwerveSubsystem;
-import org.dovershockwave.subsystems.swerve.commands.DriveLinearVelocityCommand;
 import org.dovershockwave.subsystems.swerve.commands.FeedforwardCharacterizationCommand;
 import org.dovershockwave.subsystems.swerve.commands.ResetFieldOrientatedDriveCommand;
 import org.dovershockwave.subsystems.swerve.commands.SwerveDriveCommand;
 import org.dovershockwave.subsystems.swerve.gyro.GyroIO;
 import org.dovershockwave.subsystems.swerve.gyro.GyroIONavX;
 import org.dovershockwave.subsystems.swerve.module.ModuleIO;
+import org.dovershockwave.subsystems.swerve.module.ModuleIOSim;
 import org.dovershockwave.subsystems.swerve.module.ModuleIOSpark;
 import org.dovershockwave.subsystems.swerve.module.ModuleType;
 import org.dovershockwave.subsystems.vision.*;
+import org.dovershockwave.subsystems.vision.commands.AlignToTagCommand;
+import org.dovershockwave.subsystems.vision.commands.sysid.SysIdDriveDynamicCommand;
+import org.dovershockwave.subsystems.vision.commands.sysid.SysIdDriveQuasistaticCommand;
+import org.dovershockwave.subsystems.vision.commands.sysid.SysIdTurnQuasistaticCommand;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class RobotContainer {
@@ -44,8 +47,12 @@ public class RobotContainer {
                 Pair.of(CameraType.FRONT_CAMERA, new VisionIOPhotonVision(CameraType.FRONT_CAMERA)));
         break;
       case SIM:
-        // TODO: 1/11/2025 Implement simulation modes
-        swerve = new SwerveSubsystem(new GyroIO() {}, new ModuleIO() {}, new ModuleIO() {}, new ModuleIO() {}, new ModuleIO() {});
+        swerve = new SwerveSubsystem(new GyroIO() {},
+                new ModuleIOSim(),
+                new ModuleIOSim(),
+                new ModuleIOSim(),
+                new ModuleIOSim());
+
         vision = new VisionSubsystem(
                 swerve::addVisionMeasurement,
                 Pair.of(CameraType.FRONT_CAMERA, new VisionIOPhotonVisionSim(CameraType.FRONT_CAMERA, swerve::getPose)));
@@ -60,15 +67,15 @@ public class RobotContainer {
 
     if (!isCompetitionMatch()) {
       autoChooser.addOption("Drive Simple FF Characterization", new FeedforwardCharacterizationCommand(swerve));
-      autoChooser.addOption("Drive SysId (Quasistatic Forward)", swerve.sysIdDriveQuasistatic(SysIdRoutine.Direction.kForward));
-      autoChooser.addOption("Drive SysId (Quasistatic Reverse)", swerve.sysIdDriveQuasistatic(SysIdRoutine.Direction.kReverse));
-      autoChooser.addOption("Drive SysId (Dynamic Forward)", swerve.sysIdDriveDynamic(SysIdRoutine.Direction.kForward));
-      autoChooser.addOption("Drive SysId (Dynamic Reverse)", swerve.sysIdDriveDynamic(SysIdRoutine.Direction.kReverse));
+      autoChooser.addOption("Drive SysId (Quasistatic Forward)", new SysIdDriveQuasistaticCommand(swerve, SysIdRoutine.Direction.kForward));
+      autoChooser.addOption("Drive SysId (Quasistatic Reverse)", new SysIdDriveQuasistaticCommand(swerve, SysIdRoutine.Direction.kReverse));
+      autoChooser.addOption("Drive SysId (Dynamic Forward)", new SysIdDriveDynamicCommand(swerve, SysIdRoutine.Direction.kForward));
+      autoChooser.addOption("Drive SysId (Dynamic Reverse)", new SysIdDriveDynamicCommand(swerve, SysIdRoutine.Direction.kReverse));
 
-      autoChooser.addOption("Turn SysId (Quasistatic Forward)", swerve.sysIdTurnQuasistatic(SysIdRoutine.Direction.kForward));
-      autoChooser.addOption("Turn SysId (Quasistatic Reverse)", swerve.sysIdTurnQuasistatic(SysIdRoutine.Direction.kReverse));
-      autoChooser.addOption("Turn SysId (Dynamic Forward)", swerve.sysIdTurnDynamic(SysIdRoutine.Direction.kForward));
-      autoChooser.addOption("Turn SysId (Dynamic Reverse)", swerve.sysIdTurnDynamic(SysIdRoutine.Direction.kReverse));
+      autoChooser.addOption("Turn SysId (Quasistatic Forward)", new SysIdTurnQuasistaticCommand(swerve, SysIdRoutine.Direction.kForward));
+      autoChooser.addOption("Turn SysId (Quasistatic Reverse)", new SysIdTurnQuasistaticCommand(swerve, SysIdRoutine.Direction.kReverse));
+      autoChooser.addOption("Turn SysId (Dynamic Forward)", new SysIdDriveDynamicCommand(swerve, SysIdRoutine.Direction.kForward));
+      autoChooser.addOption("Turn SysId (Dynamic Reverse)", new SysIdDriveDynamicCommand(swerve, SysIdRoutine.Direction.kReverse));
     }
 
     configureBindings();
@@ -76,17 +83,19 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
-//    swerve.setDefaultCommand(new SwerveDriveCommand(swerve, driverController));
+    swerve.setDefaultCommand(new SwerveDriveCommand(swerve, driverController));
     driverController.b().onTrue(new ResetFieldOrientatedDriveCommand(swerve));
-//    driverController.x().onTrue(new InstantCommand(swerve::stopWithX, swerve));
+    driverController.x().onTrue(new InstantCommand(swerve::stopWithX, swerve));
+
+    driverController.y().onTrue(new AlignToTagCommand(swerve, vision, CameraType.FRONT_CAMERA));
 
     driverController.leftBumper().onTrue(new InstantCommand(() -> swerve.multiplyFF(-0.1)).ignoringDisable(true));
     driverController.rightBumper().onTrue(new InstantCommand(() -> swerve.multiplyFF(0.1)).ignoringDisable(true));
-    driverController.x().onTrue(new DriveLinearVelocityCommand(swerve, driverController, false));
-    driverController.y().onTrue(new DriveLinearVelocityCommand(swerve, driverController, true));
+//    driverController.x().onTrue(new DriveLinearVelocityCommand(swerve, driverController, false));
+//    driverController.y().onTrue(new DriveLinearVelocityCommand(swerve, driverController, true));
 
-    driverController.povDown().onTrue(new InstantCommand(() -> swerve.setDefaultCommand(new SwerveDriveCommand(swerve, driverController))));
-    driverController.povUp().onTrue(new InstantCommand(() -> CommandScheduler.getInstance().removeDefaultCommand(swerve)));
+//    driverController.povDown().onTrue(new InstantCommand(() -> swerve.setDefaultCommand(new SwerveDriveCommand(swerve, driverController))));
+//    driverController.povUp().onTrue(new InstantCommand(() -> CommandScheduler.getInstance().removeDefaultCommand(swerve)));
   }
 
   public static boolean isCompetitionMatch() {

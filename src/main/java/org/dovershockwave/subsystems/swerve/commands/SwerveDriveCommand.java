@@ -24,7 +24,9 @@ public class SwerveDriveCommand extends Command {
   }
 
   @Override public void execute() {
-    final var linearVelocity = getLinearVelocityFromJoysticks(-controller.getLeftY(), -controller.getLeftX());
+    final var xVelocity = Constants.CURRENT_MODE == Constants.Mode.REAL ? -controller.getLeftY() : controller.getLeftY();
+    final var yVelocity = Constants.CURRENT_MODE == Constants.Mode.REAL ? -controller.getLeftX() : controller.getLeftX();
+    final var linearVelocity = getLinearVelocityFromJoysticks(xVelocity, yVelocity);
     final var speeds = getChassisSpeeds(linearVelocity);
     final var isFlipped = DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == DriverStation.Alliance.Red;
     swerve.runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(
@@ -33,7 +35,7 @@ public class SwerveDriveCommand extends Command {
   }
 
   private ChassisSpeeds getChassisSpeeds(Translation2d linearVelocity) {
-    var omega = MathUtil.applyDeadband(-controller.getRightX(), Constants.DRIVE_DEADBAND);
+    var omega = MathUtil.applyDeadband(-controller.getRightX() , Constants.DRIVE_DEADBAND);
 
     // Square rotation value for more precise control
     omega = Math.copySign(omega * omega, omega);

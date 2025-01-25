@@ -4,6 +4,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.Alert;
+import org.dovershockwave.Constants;
 import org.dovershockwave.subsystems.swerve.SwerveConstants;
 import org.dovershockwave.utils.PIDFGains;
 import org.dovershockwave.utils.TunablePIDF;
@@ -24,8 +25,8 @@ public class Module {
   public Module(ModuleIO io, ModuleType type) {
     this.io = io;
     this.type = type;
-    drivePIDF = new TunablePIDF("Drive/" + type.name + "Module/DrivePID/", SwerveConstants.DRIVE_PIDF);
-    turnPIDF = new TunablePIDF("Drive/" + type.name + "Module/TurnPID/", SwerveConstants.TURN_PIDF);
+    drivePIDF = new TunablePIDF("Drive/" + type.name + "Module/DrivePID/", Constants.CURRENT_MODE == Constants.Mode.REAL ? SwerveConstants.DRIVE_PIDF : SwerveConstants.DRIVE_SIM_PIDF);
+    turnPIDF = new TunablePIDF("Drive/" + type.name + "Module/TurnPID/", Constants.CURRENT_MODE == Constants.Mode.REAL ? SwerveConstants.TURN_PIDF : SwerveConstants.TURN_SIM_PIDF);
 
     driveDisconnectedAlert = new Alert("Disconnected drive motor on " + type.name + " module.", Alert.AlertType.kError);
     turnDisconnectedAlert = new Alert("Disconnected turn motor on " + type.name + " module.", Alert.AlertType.kError);

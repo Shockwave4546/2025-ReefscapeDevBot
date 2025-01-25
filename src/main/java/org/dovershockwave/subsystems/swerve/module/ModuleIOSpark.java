@@ -1,7 +1,6 @@
 package org.dovershockwave.subsystems.swerve.module;
 
 import com.revrobotics.AbsoluteEncoder;
-import com.revrobotics.REVLibError;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkClosedLoopController;
@@ -115,13 +114,17 @@ public class ModuleIOSpark implements ModuleIO {
     turnPID.setReference(setpoint, SparkBase.ControlType.kPosition);
   }
 
-  @Override public REVLibError setDrivePIDF(PIDFGains gains) {
+  @Override public void setDrivePIDF(PIDFGains gains) {
     final var config = new SparkMaxConfig().apply(new ClosedLoopConfig().pidf(gains.p(), gains.i(), gains.d(), gains.ff()));
-    return driveSpark.configure(config, SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kNoPersistParameters);
+    tryUntilOk(driveSpark, 5, spark -> {
+      spark.configure(config, SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kNoPersistParameters);
+    });
   }
 
-  @Override public REVLibError setTurnPIDF(PIDFGains gains) {
+  @Override public void setTurnPIDF(PIDFGains gains) {
     final var config = new SparkMaxConfig().apply(new ClosedLoopConfig().pidf(gains.p(), gains.i(), gains.d(), gains.ff()));
-    return turnSpark.configure(config, SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kNoPersistParameters);
+    tryUntilOk(turnSpark, 5, spark -> {
+      spark.configure(config, SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kNoPersistParameters);
+    });
   }
 }

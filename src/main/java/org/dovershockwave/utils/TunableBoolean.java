@@ -30,9 +30,9 @@ public class TunableBoolean {
   }
 
   public boolean hasChanged(int id) {
-    boolean currentValue = get();
-    boolean lastValue = lastHasChangedValues.get(id);
-    if (currentValue != lastValue) {
+    final boolean currentValue = get();
+    final Boolean lastValue = lastHasChangedValues.get(id);
+    if (lastValue == null || currentValue != lastValue) {
       lastHasChangedValues.put(id, currentValue);
       return true;
     }
