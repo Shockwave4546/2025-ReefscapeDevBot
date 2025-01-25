@@ -18,8 +18,8 @@ public class VisionConstants {
   public static final double ANGULAR_STD_DEV_BASELINE = 0.06; // Radians
 
   public static final PIDFGains ALIGNMENT_OMEGA_PID = new PIDFGains(15, 0.0, 0, 0.0);
-  public static final PIDFGains ALIGNMENT_X_VELOCITY_PID = new PIDFGains(5.5, 0.0, 0, 0);
-  public static final PIDFGains ALIGNMENT_Y_VELOCITY_PID = new PIDFGains(5.5, 0.0, 0, 0);
+  public static final PIDFGains ALIGNMENT_X_VELOCITY_PID = new PIDFGains(5, 0.0, 0, 0);
+  public static final PIDFGains ALIGNMENT_Y_VELOCITY_PID = new PIDFGains(5, 0.0, 0, 0);
 
   public static final double ALIGNMENT_RAD_TOLERANCE = Units.degreesToRadians(3);
   public static final double ALIGNMENT_X_METERS_TOLERANCE = Units.inchesToMeters(2);

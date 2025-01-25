@@ -66,24 +66,24 @@ public class MoveToTagCommand extends Command {
       this.tagFound = true;
       final var xVelocity = xVelocityPID.calculate(bestTarget.translation().getX(), 0.5);
       final var yVelocity = yVelocityPID.calculate(bestTarget.translation().getY(), 0.0);
-      final var omega = omegaPID.calculate(swerve.getRotation().getRadians(), position.robotHeading.getRadians());
+      final var omega = omegaPID.calculate(swerve.getRotation().getRadians(), position.robotHeading().getRadians());
 
       swerve.runVelocity(new ChassisSpeeds(xVelocity, yVelocity, omega), false);
 
-      Logger.recordOutput("MoveToTagCommand/Target-" + position.id + "/ThetaXCurrent", bestTarget.translation().getX());
-      Logger.recordOutput("MoveToTagCommand/Target-" + position.id  + "/ThetaXGoal", 0.0);
-      Logger.recordOutput("MoveToTagCommand/Target-" + position.id  + "/ThetaXError", xVelocityPID.getError());
-      Logger.recordOutput("MoveToTagCommand/Target-" + position.id  + "/XVelocity", xVelocity);
+      Logger.recordOutput("MoveToTagCommand/Target-" + position.id() + "/ThetaXCurrent", bestTarget.translation().getX());
+      Logger.recordOutput("MoveToTagCommand/Target-" + position.id() + "/ThetaXGoal", 0.0);
+      Logger.recordOutput("MoveToTagCommand/Target-" + position.id() + "/ThetaXError", xVelocityPID.getError());
+      Logger.recordOutput("MoveToTagCommand/Target-" + position.id() + "/XVelocity", xVelocity);
 
-      Logger.recordOutput("MoveToTagCommand/Target-" + position.id + "/ThetaYCurrent", bestTarget.translation().getY());
-      Logger.recordOutput("MoveToTagCommand/Target-" + position.id  + "/ThetaYGoal", 0.0);
-      Logger.recordOutput("MoveToTagCommand/Target-" + position.id  + "/ThetaYError", yVelocityPID.getError());
-      Logger.recordOutput("MoveToTagCommand/Target-" + position.id  + "/YVelocity", yVelocity);
+      Logger.recordOutput("MoveToTagCommand/Target-" + position.id() + "/ThetaYCurrent", bestTarget.translation().getY());
+      Logger.recordOutput("MoveToTagCommand/Target-" + position.id() + "/ThetaYGoal", 0.0);
+      Logger.recordOutput("MoveToTagCommand/Target-" + position.id() + "/ThetaYError", yVelocityPID.getError());
+      Logger.recordOutput("MoveToTagCommand/Target-" + position.id() + "/YVelocity", yVelocity);
 
-      Logger.recordOutput("MoveToTagCommand/Target-" + position.id + "/RotRadCurrent", swerve.getRotation().getRadians());
-      Logger.recordOutput("MoveToTagCommand/Target-" + position.id  + "/RotRadGoal", position.robotHeading.getRadians());
-      Logger.recordOutput("MoveToTagCommand/Target-" + position.id  + "/RotRadError", omegaPID.getError());
-      Logger.recordOutput("MoveToTagCommand/Target-" + position.id  + "/Omega", omega);
+      Logger.recordOutput("MoveToTagCommand/Target-" + position.id() + "/RotRadCurrent", swerve.getRotation().getRadians());
+      Logger.recordOutput("MoveToTagCommand/Target-" + position.id() + "/RotRadGoal", position.robotHeading().getRadians());
+      Logger.recordOutput("MoveToTagCommand/Target-" + position.id() + "/RotRadError", omegaPID.getError());
+      Logger.recordOutput("MoveToTagCommand/Target-" + position.id() + "/Omega", omega);
     }, swerve::stop);
   }
 

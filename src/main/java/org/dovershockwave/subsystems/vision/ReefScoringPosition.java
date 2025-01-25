@@ -10,13 +10,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-public class ReefScoringPosition {
+public record ReefScoringPosition(int id, Translation3d position, Rotation2d robotHeading) {
   /**
    * Reef scoring positions with blue alliance wall as reference and robot facing the field.
-   *
+   * <p>
    * TODO: Lowk this might not work based on alliance color, but we'll see (at least the rotation part)
    */
   private static final Map<Integer, Pose2d> REEF_SCORING_POSE_2D = new HashMap<>();
+
   static {
     REEF_SCORING_POSE_2D.put(18, new Pose2d(3.6576, 4.0259, Rotation2d.fromRadians(0.0)));
     REEF_SCORING_POSE_2D.put(17, new Pose2d(4.073905999999999, 4.745482, Rotation2d.fromRadians(Math.PI / 3)));
@@ -43,16 +44,6 @@ public class ReefScoringPosition {
     REEF_SCORING_POSE_2D.put(6, new Pose2d(4.073905999999999, 11.940702, Rotation2d.fromRadians(0.0)));
   }
 
-  public final int id;
-  public final Translation3d position;
-  public final Rotation2d robotHeading;
-
-  public ReefScoringPosition(int id, Translation3d position, Rotation2d robotHeading) {
-    this.id = id;
-    this.position = position;
-    this.robotHeading = robotHeading;
-  }
-  
   public static Optional<ReefScoringPosition> getPositionFor(int id, ReefScoringSide side, ReefLevel level) {
     if (!REEF_SCORING_POSE_2D.containsKey(id)) return Optional.empty();
 
@@ -63,7 +54,7 @@ public class ReefScoringPosition {
             offsetPose2d.getRotation()
     ));
   }
-  
+
   public enum ReefScoringSide {
     LEFT(Units.inchesToMeters(-6.469)),
     RIGHT(Units.inchesToMeters(6.469));

@@ -43,13 +43,13 @@ public class AlignToTagCommand extends Command {
 
     ReefScoringPosition.getPositionFor(bestTarget.tagId(), ReefScoringPosition.ReefScoringSide.LEFT, ReefScoringPosition.ReefLevel.L1).ifPresentOrElse(position -> {
       this.tagFound = true;
-      final var omega = omegaPID.calculate(swerve.getRotation().getRadians(), position.robotHeading.getRadians());
+      final var omega = omegaPID.calculate(swerve.getRotation().getRadians(), position.robotHeading().getRadians());
       swerve.runVelocity(new ChassisSpeeds(0.0, 0.0, omega), false);
 
-      Logger.recordOutput("AlignToTagCommand/Target-" + position.id + "/RotRadCurrent", swerve.getRotation().getRadians());
-      Logger.recordOutput("AlignToTagCommand/Target-" + position.id  + "/RotRadGoal", position.robotHeading.getRadians());
-      Logger.recordOutput("AlignToTagCommand/Target-" + position.id  + "/RotRadError", omegaPID.getError());
-      Logger.recordOutput("AlignToTagCommand/Target-" + position.id  + "/Omega", omega);
+      Logger.recordOutput("AlignToTagCommand/Target-" + position.id() + "/RotRadCurrent", swerve.getRotation().getRadians());
+      Logger.recordOutput("AlignToTagCommand/Target-" + position.id() + "/RotRadGoal", position.robotHeading().getRadians());
+      Logger.recordOutput("AlignToTagCommand/Target-" + position.id() + "/RotRadError", omegaPID.getError());
+      Logger.recordOutput("AlignToTagCommand/Target-" + position.id() + "/Omega", omega);
     }, swerve::stop);
   }
 
