@@ -46,9 +46,9 @@ public class AlignToTagCommand extends Command {
       final var omega = omegaPID.calculate(swerve.getRotation().getRadians(), position.robotHeading.getRadians());
       swerve.runVelocity(new ChassisSpeeds(0.0, 0.0, omega));
 
-      Logger.recordOutput("AlignToTagCommand/Target-" + position.id + "/CurrentRotRad", swerve.getRotation().getRadians());
-      Logger.recordOutput("AlignToTagCommand/Target-" + position.id  + "/GoalRotRad", position.robotHeading.getRadians());
-      Logger.recordOutput("AlignToTagCommand/Target-" + position.id  + "/RotErrorRad", omegaPID.getError());
+      Logger.recordOutput("AlignToTagCommand/Target-" + position.id + "/RotRadCurrent", swerve.getRotation().getRadians());
+      Logger.recordOutput("AlignToTagCommand/Target-" + position.id  + "/RotRadGoal", position.robotHeading.getRadians());
+      Logger.recordOutput("AlignToTagCommand/Target-" + position.id  + "/RotRadError", omegaPID.getError());
       Logger.recordOutput("AlignToTagCommand/Target-" + position.id  + "/Omega", omega);
     }, swerve::stop);
   }
