@@ -24,6 +24,8 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import org.dovershockwave.Constants;
 import org.dovershockwave.subsystems.swerve.gyro.GyroIO;
 import org.dovershockwave.subsystems.swerve.gyro.GyroIOInputsAutoLogged;
+import org.dovershockwave.subsystems.swerve.lidar.LidarIO;
+import org.dovershockwave.subsystems.swerve.lidar.LidarIOLaserCan;
 import org.dovershockwave.subsystems.swerve.module.Module;
 import org.dovershockwave.subsystems.swerve.module.ModuleIO;
 import org.dovershockwave.subsystems.swerve.module.ModuleType;
@@ -38,6 +40,7 @@ import static edu.wpi.first.units.Units.Volts;
 public class SwerveSubsystem extends SubsystemBase {
   private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
   private final Alert gyroDisconnectedAlert = new Alert("Disconnected gyro", Alert.AlertType.kError);
+  private final LidarIO lidarIO;
   private final GyroIO gyroIO;
 
   private final Module[] modules;
@@ -68,6 +71,7 @@ public class SwerveSubsystem extends SubsystemBase {
   private SwerveSetpoint previousSetpoint;
 
   public SwerveSubsystem(GyroIO gyroIO, ModuleIO frontLeft, ModuleIO frontRight, ModuleIO backLeft, ModuleIO backRight) {
+    this.lidarIO = new LidarIOLaserCan();
     this.gyroIO = gyroIO;
     this.modules = new Module[]{
             new Module(frontLeft, ModuleType.FRONT_LEFT),
