@@ -4,6 +4,7 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
+import org.littletonrobotics.junction.Logger;
 import org.photonvision.PhotonCamera;
 
 import java.util.HashSet;
@@ -48,6 +49,44 @@ public class VisionIOPhotonVision implements VisionIO {
       } else {
         inputs.bestTargetObservation = new TargetObservation(Integer.MIN_VALUE, new Rotation2d(), new Rotation2d(), new Translation3d(), 0.0);
         inputs.latestTargetObservations = new TargetObservation[0];
+      }
+
+      if (result.multitagResult.isEmpty() && result.hasTargets()) {
+        final var bestTarget = result.getBestTarget();
+        // Get the target pose relative to the camera
+        final var cameraToTarget = bestTarget.getBestCameraToTarget();
+
+        Logger.recordOutput("Vision/Summary/SingleTag/BestCameraToTarget", cameraToTarget);
+
+        // Known transform from robot to camera (should be defined in your robot configuration)
+        final var robotToCamera = CameraType.FRONT_CAMERA.robotToCamera;
+        Logger.recordOutput("Vision/Summary/SingleTag/RobotToCamera", robotToCamera);
+
+        // Invert robotToCamera to get cameraToRobot
+        final var cameraToRobot = robotToCamera.inverse();
+        Logger.recordOutput("Vision/Summary/SingleTag/CameraToRobot", cameraToRobot);
+
+        // Combine cameraToTarget with cameraToRobot to find the robot pose relative to the target
+        final var robotToTarget = cameraToTarget.plus(cameraToRobot);
+        Logger.recordOutput("Vision/Summary/SingleTag/RobotToTarget", cameraToRobot);
+
+        // Assuming you know the pose of the target in the field
+        final var fieldToTarget = VisionConstants.APRIL_TAG_FIELD.getTagPose(bestTarget.getFiducialId()).get(); // Define the field-to-target Pose3d (AprilTag position on the field)
+        Logger.recordOutput("Vision/Summary/SingleTag/FieldToTarget", fieldToTarget);
+
+        // Combine fieldToTarget with the inverted robotToTarget to get fieldToRobot
+        final var fieldToRobot = fieldToTarget.transformBy(robotToTarget.inverse());
+        Logger.recordOutput("Vision/Summary/SingleTag/FieldToRobot", fieldToRobot);
+
+        Logger.recordOutput("Vision/Summary/SingleTag/Ambiguity", bestTarget.poseAmbiguity);
+
+        poseObservations.add(new PoseObservation(
+                result.getTimestampSeconds(),
+                fieldToRobot,
+                bestTarget.poseAmbiguity,
+                1,
+                cameraToRobot.getTranslation().getNorm()
+        ));
       }
 
       // Add pose observation

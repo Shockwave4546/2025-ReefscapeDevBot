@@ -1,12 +1,14 @@
 package org.dovershockwave;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import edu.wpi.first.math.Pair;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import org.dovershockwave.subsystems.swerve.SwerveSubsystem;
+import org.dovershockwave.subsystems.swerve.commands.DriveLinearVelocityCommand;
 import org.dovershockwave.subsystems.swerve.commands.FeedforwardCharacterizationCommand;
 import org.dovershockwave.subsystems.swerve.commands.ResetFieldOrientatedDriveCommand;
 import org.dovershockwave.subsystems.swerve.commands.SwerveDriveCommand;
@@ -16,6 +18,9 @@ import org.dovershockwave.subsystems.swerve.module.ModuleIO;
 import org.dovershockwave.subsystems.swerve.module.ModuleIOSim;
 import org.dovershockwave.subsystems.swerve.module.ModuleIOSpark;
 import org.dovershockwave.subsystems.swerve.module.ModuleType;
+import org.dovershockwave.subsystems.vision.*;
+import org.dovershockwave.subsystems.vision.commands.AlignToTagCommand;
+import org.dovershockwave.subsystems.vision.commands.MoveToTagCommand;
 import org.dovershockwave.subsystems.vision.commands.sysid.SysIdDriveDynamicCommand;
 import org.dovershockwave.subsystems.vision.commands.sysid.SysIdDriveQuasistaticCommand;
 import org.dovershockwave.subsystems.vision.commands.sysid.SysIdTurnQuasistaticCommand;
@@ -23,7 +28,7 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class RobotContainer {
   protected final SwerveSubsystem swerve;
-//  private final VisionSubsystem vision;
+  private final VisionSubsystem vision;
   protected final CommandXboxController driverController = new CommandXboxController(Constants.DRIVER_CONTROLLER_PORT);
   protected final CommandXboxController operatorController = new CommandXboxController(Constants.OPERATOR_CONTROLLER_PORT);
 
@@ -39,9 +44,9 @@ public class RobotContainer {
                 new ModuleIOSpark(ModuleType.BACK_LEFT),
                 new ModuleIOSpark(ModuleType.BACK_RIGHT));
 
-//        vision = new VisionSubsystem(
-//                swerve::addVisionMeasurement,
-//                Pair.of(CameraType.FRONT_CAMERA, new VisionIOPhotonVision(CameraType.FRONT_CAMERA)));
+        vision = new VisionSubsystem(
+                swerve::addVisionMeasurement,
+                Pair.of(CameraType.FRONT_CAMERA, new VisionIOPhotonVision(CameraType.FRONT_CAMERA)));
         break;
       case SIM:
         swerve = new SwerveSubsystem(new GyroIO() {},
@@ -50,14 +55,14 @@ public class RobotContainer {
                 new ModuleIOSim(),
                 new ModuleIOSim());
 
-//        vision = new VisionSubsystem(
-//                swerve::addVisionMeasurement,
-//                Pair.of(CameraType.FRONT_CAMERA, new VisionIOPhotonVisionSim(CameraType.FRONT_CAMERA, swerve::getPose)));
+        vision = new VisionSubsystem(
+                swerve::addVisionMeasurement,
+                Pair.of(CameraType.FRONT_CAMERA, new VisionIOPhotonVisionSim(CameraType.FRONT_CAMERA, swerve::getPose)));
         break;
       case REPLAY:
       default:
         swerve = new SwerveSubsystem(new GyroIO() {}, new ModuleIO() {}, new ModuleIO() {}, new ModuleIO() {}, new ModuleIO() {});
-//        vision = new VisionSubsystem(swerve::addVisionMeasurement, Pair.of(CameraType.NONE, new VisionIO() {}));
+        vision = new VisionSubsystem(swerve::addVisionMeasurement, Pair.of(CameraType.NONE, new VisionIO() {}));
     }
 
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
@@ -84,14 +89,14 @@ public class RobotContainer {
     driverController.b().onTrue(new ResetFieldOrientatedDriveCommand(swerve));
     driverController.x().onTrue(new InstantCommand(swerve::stopWithX, swerve));
 
-//    driverController.y().onTrue(new AlignToTagCommand(swerve, vision, CameraType.FRONT_CAMERA));
-//    driverController.a().onTrue(new MoveToTagCommand(swerve, vision, CameraType.FRONT_CAMERA));
+    driverController.y().onTrue(new AlignToTagCommand(swerve, vision, CameraType.FRONT_CAMERA));
+    driverController.a().onTrue(new MoveToTagCommand(swerve, vision, CameraType.FRONT_CAMERA));
 
 
-    driverController.leftBumper().onTrue(new InstantCommand(() -> swerve.multiplyFF(-0.1)).ignoringDisable(true));
-    driverController.rightBumper().onTrue(new InstantCommand(() -> swerve.multiplyFF(0.1)).ignoringDisable(true));
-//    driverController.x().onTrue(new DriveLinearVelocityCommand(swerve, driverController, false));
-//    driverController.y().onTrue(new DriveLinearVelocityCommand(swerve, driverController, true));
+//    driverController.leftBumper().onTrue(new InstantCommand(() -> swerve.multiplyFF(-0.1)).ignoringDisable(true));
+//    driverController.rightBumper().onTrue(new InstantCommand(() -> swerve.multiplyFF(0.1)).ignoringDisable(true));
+    driverController.x().onTrue(new DriveLinearVelocityCommand(swerve, driverController, false));
+    driverController.y().onTrue(new DriveLinearVelocityCommand(swerve, driverController, true));
 
 //    driverController.povDown().onTrue(new InstantCommand(() -> swerve.setDefaultCommand(new SwerveDriveCommand(swerve, driverController))));
 //    driverController.povUp().onTrue(new InstantCommand(() -> CommandScheduler.getInstance().removeDefaultCommand(swerve)));

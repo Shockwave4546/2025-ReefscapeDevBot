@@ -3,32 +3,37 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.0,
-        "y": 4.051
+        "x": 3.387685845822704,
+        "y": 5.573391561702806
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.0,
-        "y": 4.051
+        "x": 1.7988484599765946,
+        "y": 6.150094965143126
       },
       "isLocked": false,
-      "linkedName": "TestPath.1"
+      "linkedName": "ReefLBefore"
     },
     {
       "anchor": {
-        "x": 7.149523411503666,
-        "y": 4.051
+        "x": 1.5327918726084184,
+        "y": 7.357107581313775
       },
       "prevControl": {
-        "x": 6.149523411503666,
-        "y": 4.051
+        "x": 1.3634265847992362,
+        "y": 7.824945909538362
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "BargeMiddle"
+      "linkedName": "TopSource"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.7,
+      "rotationDegrees": -54.0
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -42,13 +47,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": -54.0
   },
   "reversed": false,
-  "folder": "Calibration",
+  "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 119.5908714111091
   },
   "useDefaultConstraints": true
 }

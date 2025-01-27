@@ -17,7 +17,7 @@ public class SwerveConstants {
   public static final double TRACK_WIDTH_METERS = 0.545;
   // Distance between front and back wheels on robot
   public static final double WHEEL_BASE_METERS = 0.545;
-  public static final double DRIVE_BASE_RADIUS = Math.sqrt(Math.pow(WHEEL_BASE_METERS, 2) + Math.pow(TRACK_WIDTH_METERS, 2));
+  public static final double DRIVE_BASE_RADIUS = Math.sqrt(Math.pow(WHEEL_BASE_METERS / 2.0, 2) + Math.pow(TRACK_WIDTH_METERS / 2.0, 2));
   public static final double MAX_SPEED_METERS_PER_SECOND = 4.65;
   public static final double MAX_ANGULAR_SPEED_RAD_PER_SEC = MAX_SPEED_METERS_PER_SECOND / DRIVE_BASE_RADIUS;
   public static final Translation2d[] MODULE_TRANSLATIONS = {
@@ -55,16 +55,16 @@ public class SwerveConstants {
   public static final PIDFGains DRIVE_SIM_PIDF = new PIDFGains(0.075, 0.0, 0.01, 0.1);
   public static final PIDFGains TURN_SIM_PIDF = new PIDFGains(20.0, 0.0, 0.0, 0.0);
 
-//  public static final PIDConstants TRANSLATION_PID = new PIDConstants(0.0, 0.0, 0.0);
-//  public static final PIDConstants ROTATION_PID = new PIDConstants(0.0, 0.0, 0.0);
-  public static final PIDConstants TRANSLATION_PID = new PIDConstants(3.0, 0.0, 0.08);
+  public static final PIDConstants TRANSLATION_PID = new PIDConstants(10.0, 0.0, 0.08);
   public static final PIDConstants ROTATION_PID = new PIDConstants(2.91, 0.0, 0.094);
+//  public static final PIDConstants TRANSLATION_PID = new PIDConstants(7.5, 0.0, 0.0);
+//  public static final PIDConstants ROTATION_PID = new PIDConstants(7.5, 0.0, 0.0);
   public static final RobotConfig PATH_PLANNER_ROBOT_CONFIG = new RobotConfig(
-          47.63,  // Robot mass (kg)
-          5,             // Robot MOI (kg m^2)
+          43.000,  // Robot mass (kg)
+          12.8,             // Robot MOI (kg m^2)
           new ModuleConfig(
                   WHEEL_RADIUS_METERS,   // Wheel radius (m)
-                  3.6,                        // Max speed (m/s)
+                  4.0,                        // Max speed (m/s)
                   1.43,                        // Wheel COF (unitless)
                   DCMotor.getNEO(1).withReduction(DRIVE_MOTOR_REDUCTION),
                   MotorConstants.AUTO_DRIVE_NEO_CURRENT_LIMIT,

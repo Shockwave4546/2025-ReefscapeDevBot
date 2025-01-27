@@ -8,20 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.603126427275125,
-        "y": 6.2499184161243315
+        "x": 5.803399135044644,
+        "y": 6.953404416454081
       },
       "isLocked": false,
       "linkedName": "ReefH"
     },
     {
       "anchor": {
-        "x": 1.5756495993682844,
-        "y": 7.302751820798802
+        "x": 1.5327918726084184,
+        "y": 7.357107581313775
       },
       "prevControl": {
-        "x": 2.681432657048701,
-        "y": 6.426302814093215
+        "x": 2.7516202108995733,
+        "y": 6.594263485323645
       },
       "nextControl": null,
       "isLocked": false,
@@ -30,7 +30,7 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.6283571105072463,
+      "waypointRelativePos": 0.35,
       "rotationDegrees": -54.0
     }
   ],
@@ -39,9 +39,9 @@
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.6,
-    "maxAcceleration": 4.0,
+    "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
-    "maxAngularAcceleration": 720.0,
+    "maxAngularAcceleration": 445.0,
     "nominalVoltage": 12.0,
     "unlimited": false
   },
