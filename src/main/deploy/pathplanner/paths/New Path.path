@@ -8,32 +8,27 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.1477726141538906,
-        "y": 5.5777834034403195
+        "x": 4.736610000000001,
+        "y": 5.00108
       },
       "isLocked": false,
       "linkedName": "ReefL"
     },
     {
       "anchor": {
-        "x": 1.5327918726084184,
-        "y": 7.357107581313775
+        "x": 4.0,
+        "y": 6.0
       },
       "prevControl": {
-        "x": 1.3634265847992362,
-        "y": 7.824945909538362
+        "x": 3.0,
+        "y": 6.0
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "TopSource"
+      "linkedName": null
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.7,
-      "rotationDegrees": -54.0
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -47,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -54.0
+    "rotation": 0.0
   },
   "reversed": false,
   "folder": null,
